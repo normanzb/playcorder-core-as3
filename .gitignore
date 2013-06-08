@@ -1,0 +1,14 @@
+# Eclipse
+.project
+.settings/
+.externalToolBuilders/
+
+# JetBrains
+.idea
+
+# Build
+dist/
+node_modules
+
+# Mac
+.DS_Store

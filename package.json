@@ -1,0 +1,9 @@
+{
+    "name": "audio-helper",
+    "version": "0.0.1",
+    "dependencies": {
+        "flex-sdk": "~4.6.0",
+        "grunt": "~0.4.1",
+        "grunt-shell": "~0.2.0"
+    }
+}
