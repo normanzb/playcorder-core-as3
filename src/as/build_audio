@@ -1,0 +1,2 @@
+mxmlc AudioHelper.as -library-path+=../../lib/
+mv AudioHelper.swf ~/Projects/dl3/src/js/lib/recorderfl/dist/legacy/AudioHelper.swf
