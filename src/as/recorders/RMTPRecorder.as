@@ -4,6 +4,7 @@ package recorders
     import flash.net.*;
     import flash.events.NetStatusEvent;
     import flash.media.Microphone;
+    import flash.utils.*;
 
     // 3rd party
     import com.demonsters.debugger.MonsterDebugger;
@@ -37,6 +38,7 @@ package recorders
 
         private var _dfdConnect:Deferred;
         private var _dfdRecord:Deferred;
+        private var _dfdBufferEmpty:Deferred;
         private var _queueGUID:Vector.<GUID> = new Vector.<GUID>();
 
         public var config:Object;
@@ -158,21 +160,46 @@ package recorders
                 return;
             }
 
-            // TODO: wait for buffer flushed
+            // wait for buffer flushed
+            var dfd:Deferred = new Deferred();
+
+            if (_stream.bufferLength <= 0)
+            {
+                setTimeout(function():void
+                {
+                    dfd.resolve(null);
+                }, 1000);
+            }
+            else
+            {
+                _dfdBufferEmpty = new Deferred();
+                dfd.resolve(_dfdBufferEmpty.promise);
+            }
             
+            dfd
+                .promise
+                .then(function():void
+                {
+                    _stream.close();
+
+                    MonsterDebugger.trace(this, 'stream closed');
+
+                    var evt:RecorderEvent = new RecorderEvent(RecorderEvent.STOPPED, _currentGUID);
+                    dispatchEvent( evt );
+                });
 
             if (_dfdRecord)
             {
-                _dfdRecord.resolve( null );
-                _dfdRecord = null;
+                _dfdRecord
+                    .resolve( dfd.promise );
+                _dfdRecord
+                    .promise.then(function():void
+                    {
+                        _dfdRecord = null;
+                    });
+
+                event.promise = _dfdRecord.promise;
             }
-
-            _stream.close();
-
-            MonsterDebugger.trace(this, 'stream closed');
-
-            var evt:RecorderEvent = new RecorderEvent(RecorderEvent.STOPPED, _currentGUID);
-            dispatchEvent( evt );
         }
 
         private function onStateDisconnect(event:StatusEvent):void
@@ -226,6 +253,20 @@ package recorders
             else if (event.info.code == "NetConnection.Connect.Closed")
             {
                 disposeConnection();
+            }
+        }
+
+        private function onStreamStatus(event:NetStatusEvent):void
+        {
+            MonsterDebugger.trace(this,  'net stream status changed, info.code: ' + event.info.code);
+
+            if (event.info.code == "NetStream.Buffer.Empty")
+            {
+                if (_dfdBufferEmpty != null)
+                {
+                    _dfdBufferEmpty.resolve( null );
+                }
+                _dfdBufferEmpty = null;
             }
         }
 
