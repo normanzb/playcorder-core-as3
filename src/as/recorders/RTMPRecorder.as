@@ -21,7 +21,7 @@ package recorders
     import tickets.GUIDTicket;
     import guids.GUID;
 
-    public class RMTPRecorder 
+    public class RTMPRecorder 
         extends Recorder 
         implements IConnectable
     {
@@ -295,7 +295,7 @@ package recorders
             return [];
         }
 
-        function RMTPRecorder(mic:Microphone, cfg:Object)
+        function RTMPRecorder(mic:Microphone, cfg:Object)
         {
             config = cfg;
             super(mic, cfg);

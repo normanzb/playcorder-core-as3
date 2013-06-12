@@ -2,8 +2,8 @@ package recorders
 {
     import factories.IFactory;
     import recorders.Recorder;
-    import recorders.ASRRMTPRecorder;
-    import recorders.RMTPRecorder;
+    import recorders.ASRRTMPRecorder;
+    import recorders.RTMPRecorder;
     import recorders.LocalRecorder;
     import flash.media.Microphone;
 
@@ -11,8 +11,8 @@ package recorders
     {
         public static var inst:Factory = new Factory();
 
-        public const TYPE_RMTP:String = 'rmtp';
-        public const TYPE_ASRRMTP:String = 'asrrmtp';
+        public const TYPE_RMTP:String = 'rtmp';
+        public const TYPE_ASRRMTP:String = 'asrrtmp';
         public const TYPE_LOCAL:String = 'local';
 
         public function produce(config:Object):Object
@@ -31,10 +31,10 @@ package recorders
             switch(rType)
             {
                 case TYPE_ASRRMTP:
-                    ret = new ASRRMTPRecorder(mic, config);
+                    ret = new ASRRTMPRecorder(mic, config);
                     break;
                 case TYPE_RMTP:
-                    ret = new RMTPRecorder(mic, config);
+                    ret = new RTMPRecorder(mic, config);
                     break;
                 case TYPE_LOCAL:
                 default:

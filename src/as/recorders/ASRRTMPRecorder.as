@@ -16,8 +16,8 @@ package recorders
     import connectors.IConnectable;
     import tickets.Ticket;
 
-    public class ASRRMTPRecorder 
-        extends RMTPRecorder 
+    public class ASRRTMPRecorder 
+        extends RTMPRecorder 
     {
 
         private const defaultSetting:Object = 
@@ -51,7 +51,7 @@ package recorders
             return ret;
         }
 
-        function ASRRMTPRecorder(mic:Microphone, cfg:Object)
+        function ASRRTMPRecorder(mic:Microphone, cfg:Object)
         {
             super(mic, cfg);
 
