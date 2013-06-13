@@ -15,6 +15,7 @@ package recorders
     import helpers.StateMachine;
     import events.StatusEvent;
     import events.RecorderEvent;
+    import events.RecorderErrorEvent;
     import recorders.Recorder;
     import connectors.IConnectable;
     import tickets.Ticket;
@@ -78,7 +79,7 @@ package recorders
             MonsterDebugger.trace(this, 'pop guid');
 
             // record current guid
-            _currentGUID = _queueGUID.pop();
+            // _currentGUID = _queueGUID.pop();
             
             _dfdConnect = new Deferred();
 
@@ -238,15 +239,25 @@ package recorders
             
             else if (event.info.code == "NetConnection.Connect.Failed")
             {
-                
-                _dfdConnect.reject(event.info.code);
 
                 if (_conn)
                 {
                     _conn.close();
                 }
 
-                _stateMachine.gotoStatus('idle');
+                // _stateMachine.gotoStatus('idle');
+                _stateMachine.reset();
+
+                _dfdConnect.reject(event.info.code);
+
+                var evt:RecorderErrorEvent = new RecorderErrorEvent
+                (
+                    RecorderEvent.ERROR, 
+                    _currentGUID, 
+                    RecorderErrorEvent.CODE_CONNECTION_FAIL
+                );
+
+                dispatchEvent( evt );
 
             }
             
@@ -254,6 +265,7 @@ package recorders
             {
                 disposeConnection();
             }
+
         }
 
         private function onStreamStatus(event:NetStatusEvent):void
@@ -332,7 +344,11 @@ package recorders
 
             ret = new GUIDTicket(dfd.promise);
 
-            _queueGUID.push(ret.guid);
+            _stateMachine.gotoStatus('idle')
+                .then(function():void
+                {
+                    _currentGUID = ret.guid;
+                });
 
             prm = _stateMachine.gotoStatus('connect');
 

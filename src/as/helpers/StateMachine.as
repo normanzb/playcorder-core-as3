@@ -16,6 +16,16 @@ package helpers
 
         public var states:Array;
 
+        private function onReset():void
+        {
+            MonsterDebugger.trace(this, 'state reset');
+
+            _cur = 0;
+            _status = states[_cur];
+            _targetStatus = null;
+            _inLoop = null;
+        }
+
         private function looper():void
         {
             var newStatus:String;
@@ -78,7 +88,12 @@ package helpers
                     MonsterDebugger.trace(me,  
                         'state change failed due to reason: ' + msg);
 
-                    me._inLoop = null;
+                    if (_inLoop)
+                    {
+                        _inLoop.reject(msg);
+                    }
+
+                    _inLoop = null;
                 });
 
         }
@@ -155,6 +170,36 @@ package helpers
         public function get status():String 
         {
             return this._status;
+        }
+
+        public function reset():Promise
+        {
+            var dfd:Deferred;
+
+            MonsterDebugger.trace(this, 'try to state reset');
+
+            if (_inLoop)
+            {
+                MonsterDebugger.trace(this, ' reset deferred');                
+                dfd = _inLoop;
+            }
+            else
+            {
+                dfd = new Deferred();
+
+                dfd.resolve(null);
+            }
+
+            return dfd
+                .promise
+                .then(function():void
+                {
+                    onReset();
+                }, function():void
+                {
+                    onReset();
+                });
+
         }
 
 

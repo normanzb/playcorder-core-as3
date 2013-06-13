@@ -10,6 +10,7 @@ package events
         public static const DISCONNECTED:String = 'disconnected';
         public static const STARTED:String = 'started';
         public static const STOPPED:String = 'stoppped';
+        public static const ERROR:String = 'error';
 
         public var guid:GUID;
         /**

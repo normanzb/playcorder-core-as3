@@ -6,6 +6,7 @@ package interoperators
     import connectors.IConnectable;
     import AudioHelper;
     import events.RecorderEvent;
+    import events.RecorderErrorEvent;
     import events.PlayerEvent;
     import tickets.Ticket;
     import tickets.GUIDTicket;
@@ -22,7 +23,7 @@ package interoperators
 
         private function onRecorderConnected(event:RecorderEvent):void
         {
-            callSelf('recorder_connected', 
+            callSelf('recorder_onconnected', 
             {
                 'guid': event.guid.toString()
             })
@@ -30,7 +31,7 @@ package interoperators
 
         private function onRecorderDisconnected(event:RecorderEvent):void
         {
-            callSelf('recorder_disconnected', 
+            callSelf('recorder_ondisconnected', 
             {
                 'guid': event.guid.toString()
             })
@@ -38,7 +39,7 @@ package interoperators
 
         private function onRecorderStarted(event:RecorderEvent):void
         {
-            callSelf('recorder_started', 
+            callSelf('recorder_onstarted', 
             {
                 'guid': event.guid.toString()
             })
@@ -46,22 +47,31 @@ package interoperators
 
         private function onRecorderStopped(event:RecorderEvent):void
         {
-            callSelf('recorder_stopped', 
+            callSelf('recorder_onstopped', 
             {
                 'guid': event.guid.toString()
             })
         }
 
+        private function onRecorderError(event:RecorderErrorEvent):void
+        {
+            callSelf('recorder_onerror',
+            {
+                'guid': event.guid ? event.guid.toString():'',
+                'code': event.code
+            })
+        }
+
         private function onPlayerStarted(event:PlayerEvent):void
         {
-            callSelf('player_started', 
+            callSelf('player_onstarted', 
             {
             })
         }
 
         private function onPlayerStopped(event:PlayerEvent):void
         {
-            callSelf('player_stopped', 
+            callSelf('player_onstopped', 
             {
             })
         }
@@ -172,6 +182,7 @@ package interoperators
                 audioHelper.recorder.addEventListener(RecorderEvent.DISCONNECTED, onRecorderDisconnected);
                 audioHelper.recorder.addEventListener(RecorderEvent.STARTED, onRecorderStarted);
                 audioHelper.recorder.addEventListener(RecorderEvent.STOPPED, onRecorderStopped);
+                audioHelper.recorder.addEventListener(RecorderEvent.ERROR, onRecorderError);
 
                 return ret;
             });

@@ -13,7 +13,8 @@ package recorders
         {
             gain: 50,
             rate: 44,
-            silence: 0
+            silence: 0,
+            quality: 8
         };
         protected var _mic:Microphone;
         private var config:Object;
@@ -38,6 +39,7 @@ package recorders
             mic.rate = Number(config['rate']);
             mic.gain = Number(config['gain']);
             mic.setSilenceLevel(Number(config['silence']));
+            mic.encodeQuality = Number(config['quality']);
 
             _mic = mic;
         }
