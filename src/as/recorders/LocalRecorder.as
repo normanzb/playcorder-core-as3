@@ -48,10 +48,5 @@ package recorders
 
             return ret;
         }
-
-        public override function get activity():Number
-        {
-            return 0;
-        }
     }
 }

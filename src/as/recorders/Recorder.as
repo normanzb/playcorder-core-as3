@@ -23,32 +23,31 @@ package recorders
         protected var _mic:Microphone;
         private var config:Object;
         private var timer:Timer;
-        private var handle:Function = function(evt:StatusEvent):void
-        {
-            var changeEvent:RecorderChangeEvent;
+        private var onMicStatus:Function;
 
-            switch (evt.code) 
-            {
-                case "Microphone.Unmuted":
-                    changeEvent = 
-                        new RecorderChangeEvent
-                        (
-                            RecorderChangeEvent.CHANGE, 
-                            RecorderChangeEvent.CODE_MIC_UNMUTED
-                        );
-                    dispatchEvent( changeEvent );
-                    break;
-                case "Microphone.Muted":
-                    changeEvent = 
-                        new RecorderChangeEvent
-                        (
-                            RecorderChangeEvent.CHANGE, 
-                            RecorderChangeEvent.CODE_MIC_MUTED
-                        );
-                    dispatchEvent( changeEvent );
-                    break;
-            }
-        };
+        private var dispatchUnmuted:Function = function():void
+        {
+            var changeEvent:RecorderChangeEvent =
+                new RecorderChangeEvent
+                (
+                    RecorderChangeEvent.CHANGE, 
+                    RecorderChangeEvent.CODE_MIC_UNMUTED
+                );
+            MonsterDebugger.trace(this, 'dispatch unmute');
+            dispatchEvent( changeEvent );
+        }
+
+        private var dispatchMuted:Function = function():void
+        {
+            var changeEvent:RecorderChangeEvent =
+                new RecorderChangeEvent
+                (
+                    RecorderChangeEvent.CHANGE, 
+                    RecorderChangeEvent.CODE_MIC_MUTED
+                );
+            MonsterDebugger.trace(this, 'dispatch mute');
+            dispatchEvent( changeEvent );
+        }
 
         private function setupMic(mic:Microphone):void
         {
@@ -62,18 +61,42 @@ package recorders
             mic.gain = Number(config['gain']);
             mic.setSilenceLevel(Number(config['silence']));
             mic.encodeQuality = Number(config['quality']);
-            mic.addEventListener(StatusEvent.STATUS, handle);
+            mic.addEventListener(StatusEvent.STATUS, onMicStatus);
+
+            if (mic.muted)
+            {
+                dispatchMuted();
+            }
+            else{
+                dispatchUnmuted();
+            }
         }
 
         private function clearMic(mic:Microphone):void
         {
-            mic.removeEventListener(StatusEvent.STATUS, handle);
+            mic.removeEventListener(StatusEvent.STATUS, onMicStatus);
         }
 
         function Recorder(mic:Microphone, cfg:Object)
         {
             var changeEvent:RecorderChangeEvent;
+            var me:Recorder = this;
             config = cfg;
+
+            onMicStatus = function(evt:StatusEvent):void
+            {
+                MonsterDebugger.trace(dispatchMuted, 'mic status change');
+
+                switch (evt.code) 
+                {
+                    case "Microphone.Unmuted":
+                        dispatchUnmuted.call(me);
+                        break;
+                    case "Microphone.Muted":
+                        dispatchMuted.call(me)
+                        break;
+                }
+            };
 
             for(var key:String in defaultSetting)
             {
@@ -83,6 +106,7 @@ package recorders
                 }
             }
 
+            // setup mic detection
             timer = new Timer(2000);
 
             timer.addEventListener(TimerEvent.TIMER, function(e:TimerEvent):void
@@ -92,6 +116,10 @@ package recorders
                 if (m == _mic)
                 {
                     return;
+                }
+
+                if (_mic != null){
+                    clearMic(_mic);
                 }
 
                 _mic = m;

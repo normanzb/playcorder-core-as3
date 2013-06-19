@@ -144,18 +144,20 @@ package interoperators
 
                 var ret:Number = 0;
 
-                if (audioHelper.recorder.microphone){
-                    ret = audioHelper.recorder.microphone.activity;
+                if (audioHelper.recorder && audioHelper.recorder.microphone){
+                    ret = audioHelper.recorder.microphone.activityLevel;
                 }
 
                 return ret;
             });
 
-            ExternalInterface.addCallback("recorder_muted", function():Number
+            ExternalInterface.addCallback("recorder_muted", function():Boolean
             {
                 var ret:Boolean = false;
 
-                if (audioHelper.recorder.microphone){
+                MonsterDebugger.trace(this, 'external calls to recorder.muted()');
+
+                if (audioHelper.recorder && audioHelper.recorder.microphone){
                     ret = audioHelper.recorder.microphone.muted;
                 }
 
