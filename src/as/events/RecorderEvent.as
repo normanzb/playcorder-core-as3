@@ -11,6 +11,7 @@ package events
         public static const STARTED:String = 'started';
         public static const STOPPED:String = 'stoppped';
         public static const ERROR:String = 'error';
+        public static const CHANGE:String = 'change';
 
         public var guid:GUID;
         /**

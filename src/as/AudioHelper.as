@@ -71,7 +71,7 @@ package
 
         public function init_recorder(config:Object):Boolean
         {
-
+            var ret:Boolean = true;
             MonsterDebugger.trace(this, 'recorder initializing...');
 
             if (_mic == null)
@@ -82,7 +82,8 @@ package
 
             if (_mic == null)
             {
-                return false
+                // TODO: start microphone change detection
+                ret = false;
             }
 
             config["microphone"] = _mic;
@@ -97,7 +98,7 @@ package
             
             _recorderInited = true;
 
-            return true;
+            return ret;
         }
 
         public function init_player(config:Object):Boolean

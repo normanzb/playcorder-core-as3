@@ -7,6 +7,7 @@ package interoperators
     import AudioHelper;
     import events.RecorderEvent;
     import events.RecorderErrorEvent;
+    import events.RecorderChangeEvent;
     import events.PlayerEvent;
     import tickets.Ticket;
     import tickets.GUIDTicket;
@@ -58,6 +59,14 @@ package interoperators
             callSelf('recorder_onerror',
             {
                 'guid': event.guid ? event.guid.toString():'',
+                'code': event.code
+            })
+        }
+
+        private function onRecorderChange(event:RecorderChangeEvent):void
+        {
+            callSelf('recorder_onchange',
+            {
                 'code': event.code
             })
         }
@@ -133,7 +142,22 @@ package interoperators
             ExternalInterface.addCallback("recorder_activity", function():Number
             {
 
-                var ret:Number = audioHelper.recorder.activity;
+                var ret:Number = 0;
+
+                if (audioHelper.recorder.microphone){
+                    ret = audioHelper.recorder.microphone.activity;
+                }
+
+                return ret;
+            });
+
+            ExternalInterface.addCallback("recorder_muted", function():Number
+            {
+                var ret:Boolean = false;
+
+                if (audioHelper.recorder.microphone){
+                    ret = audioHelper.recorder.microphone.muted;
+                }
 
                 return ret;
             });
@@ -183,6 +207,7 @@ package interoperators
                 audioHelper.recorder.addEventListener(RecorderEvent.STARTED, onRecorderStarted);
                 audioHelper.recorder.addEventListener(RecorderEvent.STOPPED, onRecorderStopped);
                 audioHelper.recorder.addEventListener(RecorderEvent.ERROR, onRecorderError);
+                audioHelper.recorder.addEventListener(RecorderChangeEvent.CHANGE, onRecorderChange);
 
                 return ret;
             });

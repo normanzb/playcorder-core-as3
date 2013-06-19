@@ -21,11 +21,6 @@ package recorders
             var mic:Microphone = Microphone(config["microphone"]);
             var ret:Recorder;
 
-            if (mic == null)
-            {
-                throw new Error('mic must not be null.')
-            }
-
             rType = rType.toLowerCase();
 
             switch(rType)

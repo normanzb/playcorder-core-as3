@@ -67,6 +67,5 @@ package events
             this._promises.push(dfd.promise);
             
         }
-    
     }
 }

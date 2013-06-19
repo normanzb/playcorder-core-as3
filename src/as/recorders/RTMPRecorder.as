@@ -113,6 +113,8 @@ package recorders
 
         private function onStateStartStream(event:StatusEvent):void
         {
+            var rejected:Deferred;
+
             MonsterDebugger.trace(this,  'status changed to start_stream');
 
             if (event.targetStatus != 'start_stream')
@@ -133,6 +135,14 @@ package recorders
                 MonsterDebugger.trace(this,  'start streaming..., guid: ' + _currentGUID);
 
                 _dfdRecord = new Deferred();
+
+                if (_mic == null)
+                {
+                    rejected = new Deferred();
+                    rejected.reject('No microphone was found');
+                    event.promise = rejected.promise;
+                    return;
+                }
                 
                 _stream = new NetStream(_conn);
                 _stream.attachAudio(_mic);
@@ -424,17 +434,6 @@ package recorders
         {
             disconnect();
         }
-
-        public override function get activity():Number
-        {
-            if (_mic == null)
-            {
-                return 0;
-            }
-
-            return _mic.activityLevel;
-        }
-
 
     }
 }
