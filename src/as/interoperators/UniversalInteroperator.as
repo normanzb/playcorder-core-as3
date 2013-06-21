@@ -153,7 +153,7 @@ package interoperators
 
             ExternalInterface.addCallback("recorder_muted", function():Boolean
             {
-                var ret:Boolean = false;
+                var ret:Boolean = true;
 
                 MonsterDebugger.trace(this, 'external calls to recorder.muted()');
 

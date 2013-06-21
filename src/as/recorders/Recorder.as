@@ -49,13 +49,40 @@ package recorders
             dispatchEvent( changeEvent );
         }
 
+        private var dispatchNotFound:Function = function():void
+        {
+            var changeEvent:RecorderChangeEvent =
+                new RecorderChangeEvent
+                (
+                    RecorderChangeEvent.CHANGE, 
+                    RecorderChangeEvent.CODE_MIC_NOT_FOUND
+                );
+            MonsterDebugger.trace(this, 'dispatch not found');
+            dispatchEvent( changeEvent );
+        }
+
+        private var dispatchFound:Function = function():void
+        {
+            var changeEvent:RecorderChangeEvent =
+                new RecorderChangeEvent
+                (
+                    RecorderChangeEvent.CHANGE, 
+                    RecorderChangeEvent.CODE_MIC_FOUND
+                );
+            MonsterDebugger.trace(this, 'dispatch found');
+            dispatchEvent( changeEvent );
+        }
+
         private function setupMic(mic:Microphone):void
         {
             var changeEvent:RecorderChangeEvent;
 
             if (mic == null){
+                dispatchNotFound();
                 return;
             }
+
+            dispatchFound();
 
             mic.rate = Number(config['rate']);
             mic.gain = Number(config['gain']);
@@ -125,28 +152,6 @@ package recorders
                 _mic = m;
 
                 setupMic(m);
-
-                if (m == null)
-                {
-                    changeEvent = 
-                        new RecorderChangeEvent
-                        (
-                            RecorderChangeEvent.CHANGE, 
-                            RecorderChangeEvent.CODE_MIC_NOT_FOUND
-                        );
-                }
-                else
-                {
-                    changeEvent = 
-                        new RecorderChangeEvent
-                        (
-                            RecorderChangeEvent.CHANGE, 
-                            RecorderChangeEvent.CODE_MIC_FOUND
-                        );
-                    
-                }
-
-                dispatchEvent( changeEvent );
 
             });
 
