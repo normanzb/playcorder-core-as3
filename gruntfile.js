@@ -1,5 +1,9 @@
 module.exports = function(grunt) {
-    var PATH_MXMLC = '../../node_modules/flex-sdk/lib/flex_sdk/bin/mxmlc';
+    var NAME_MXMLC = 'mxmlc';
+    var PATH_MXMLC = '../../node_modules/flex-sdk/lib/flex_sdk/bin/' + NAME_MXMLC;
+
+    var sys = require('sys')
+    var exec = require('child_process').exec;
 
     grunt.loadNpmTasks('grunt-shell');
 
@@ -11,8 +15,39 @@ module.exports = function(grunt) {
             'mkdir': {
                 command: 'mkdir dist',
             },
+            'config': {
+                command: 'which ' + NAME_MXMLC,
+                options: {
+                    callback: function(err, stdout, stderr, done) {
+                        var pathOfCompiler = '';
+
+                        if (err 
+                            || 
+                            // check against empty string
+                            stdout == false) {
+
+                            pathOfCompiler = PATH_MXMLC;
+
+                        }
+                        else{
+
+                            pathOfCompiler = NAME_MXMLC;
+
+                        }
+
+                        var cmd = grunt.config('shell.as3.command')
+                            .replace(/_placeholder_/g, pathOfCompiler);
+
+                        console.log('command to exec: ', cmd);
+
+                        grunt.config('shell.as3.command', cmd);
+
+                        done();
+                    }
+                }
+            },
             'as3': {
-                command: PATH_MXMLC + ' AudioHelper.as -library-path+=../../lib/ -output ../../dist/AudioHelper.swf',
+                command: '_placeholder_ AudioHelper.as -library-path+=../../lib/ -output ../../dist/AudioHelper.swf',
                 options: {
                     stdout: true,
                     stderr: true,
@@ -23,7 +58,10 @@ module.exports = function(grunt) {
                 }
             }
         }
+
     });
 
     grunt.registerTask("default", "shell".split(' '));
+
+    
 };
