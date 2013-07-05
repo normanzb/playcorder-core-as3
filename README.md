@@ -11,6 +11,7 @@ Audio Player and Recorder written in ActionScript3 with JavaScript interface.
 5. Used StateMachine internally to build the robust recording functionalities.
 6. No global event handler needed, no global pollution.
 7. Only user that in EF domains are allow to interact with the JavaScript API. This guarantined the safety of our users' privacy.
+8. Internally used Monster Debugger for easier debugging.
 
 ##Build
 
