@@ -9,6 +9,7 @@ package recorders
 
     import events.RecorderChangeEvent;
     import com.demonsters.debugger.MonsterDebugger;
+    import com.codecatalyst.util.*;
     
     public class Recorder extends EventDispatcher implements IRecordable 
     {
@@ -34,7 +35,11 @@ package recorders
                     RecorderChangeEvent.CODE_MIC_UNMUTED
                 );
             MonsterDebugger.trace(this, 'dispatch unmute');
-            dispatchEvent( changeEvent );
+            
+            nextTick(function():void
+            {
+                dispatchEvent( changeEvent );
+            })
         }
 
         private var dispatchMuted:Function = function():void
@@ -46,7 +51,11 @@ package recorders
                     RecorderChangeEvent.CODE_MIC_MUTED
                 );
             MonsterDebugger.trace(this, 'dispatch mute');
-            dispatchEvent( changeEvent );
+            
+            nextTick(function():void
+            {
+                dispatchEvent( changeEvent );
+            })
         }
 
         private var dispatchNotFound:Function = function():void
@@ -58,7 +67,11 @@ package recorders
                     RecorderChangeEvent.CODE_MIC_NOT_FOUND
                 );
             MonsterDebugger.trace(this, 'dispatch not found');
-            dispatchEvent( changeEvent );
+            
+            nextTick(function():void
+            {
+                dispatchEvent( changeEvent );
+            })
         }
 
         private var dispatchFound:Function = function():void
@@ -70,7 +83,11 @@ package recorders
                     RecorderChangeEvent.CODE_MIC_FOUND
                 );
             MonsterDebugger.trace(this, 'dispatch found');
-            dispatchEvent( changeEvent );
+            
+            nextTick(function():void
+            {
+                dispatchEvent( changeEvent );
+            })
         }
 
         private function setupMic(mic:Microphone):void
