@@ -250,32 +250,19 @@ package interoperators
 
         protected override function onReady():void
         {
+            // fire ready event when it is ready
             callSelf('onready');
+        }
+
+        protected function externalInstanceLookup(id:Number):String
+        {
+            return "";
         }
 
         public function UniversalInteroperator(playcorder:Playcorder)
         {
             _count = instanceCount++;
-            _findSelf = (<![CDATA[
-                function playcorderBuiltinFindHostObject(methodName, arg1, arg2)
-                {
-                    var id = <ID>;
-                    var objs = document.getElementsByTagName('object');
-                    var args = Array.prototype.slice.call(arguments, 1);
-                    for(var l = objs.length;l--;)
-                    {
-                        var obj = objs[l];
-
-                        if (!obj || !obj.getID || obj.getID() != id)
-                        {
-                            continue;
-                        }
-
-                        obj[methodName].apply(obj, args);
-                        break;
-                    }
-                }
-            ]]>).toString().replace(/\<ID\>/g, _count);
+            _findSelf = externalInstanceLookup( _count );
             super(playcorder);
         }
     }
