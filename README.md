@@ -47,7 +47,7 @@ To see logs from audio-helper, install MonsterDebugger <http://www.monsterdebugg
 
 ####Config
 
-	{
+    {
         gain:50, 
         rate:44, 
         silence:0, 
@@ -72,16 +72,17 @@ To see logs from audio-helper, install MonsterDebugger <http://www.monsterdebugg
 
 ####Events
 
-1. recorder_onconnected
+1. onready - fire when playcorder is ready
+2. recorder_onconnected
 2. recorder_ondisconnected
 3. recorder_onstarted
 4. recorder_onstopped
 5. recorder_onchange -  possible event code are:
 
-	* microphone.not_found - trigger when microphone is unplugged
-	* microphone.found - trigger when microphone is plugged
-	* microphone.muted - trigger when microphone is muted
-	* microphone.unmuted - trigger when microphone is unmuted
-	
+    * microphone.not_found - trigger when microphone is unplugged
+    * microphone.found - trigger when microphone is plugged
+    * microphone.muted - trigger when microphone is muted
+    * microphone.unmuted - trigger when microphone is unmuted
+    
 6. recorder_onerror - possible event code are:
-	* connection.fail - fire when the connection failed.
+    * connection.fail - fire when the connection failed.

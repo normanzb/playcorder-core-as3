@@ -7,6 +7,8 @@ package interoperators
     import interoperators.UniversalInteroperator;
 
     import com.demonsters.debugger.MonsterDebugger;
+    import com.codecatalyst.promise.Deferred;
+    import com.codecatalyst.promise.Promise;
 
     public class BrowserInteroperator extends UniversalInteroperator
     {
@@ -22,11 +24,13 @@ package interoperators
             "englishtown.co.kr"
         ];
 
-        protected override function init():void
+        protected override function init():Promise
         {
+            var dfd:Deferred = new Deferred();
 
             if (!ExternalInterface.available || _init == true){
-                return;
+                dfd.resolve( null );
+                return dfd.promise;
             }
 
             // get domain name from browser
@@ -57,9 +61,11 @@ package interoperators
                 MonsterDebugger.trace(this, 'domain name checking failed');
             }
 
-            super.init();
+            dfd.resolve(super.init());
 
             _init = true;
+
+            return dfd.promise;
         }
 
         public function BrowserInteroperator(adHlp:AudioHelper)

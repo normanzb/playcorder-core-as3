@@ -13,6 +13,8 @@ package interoperators
     import tickets.GUIDTicket;
 
     import com.demonsters.debugger.MonsterDebugger;
+    import com.codecatalyst.promise.Deferred;
+    import com.codecatalyst.promise.Promise;
 
     public class UniversalInteroperator extends Interoperator
     {
@@ -94,11 +96,15 @@ package interoperators
             );
         }  
 
-        protected override function init():void
+        // override the init method, setup callbacks and expose member methods
+        protected override function init():Promise
         {
+            var dfd:Deferred = new Deferred();
+
             if (_inited || !ExternalInterface.available)
             {
-                return;
+                dfd.resolve( null );
+                return dfd.promise;
             }
 
             ExternalInterface.addCallback("player_start", function(path:String):void
@@ -236,6 +242,15 @@ package interoperators
 
             _inited = true;
 
+            // resolve when the super class is inited.
+            dfd.resolve(super.init());
+
+            return dfd.promise;
+        }
+
+        protected override function onReady():void
+        {
+            callSelf('onready');
         }
 
         public function UniversalInteroperator(audioHelper:AudioHelper)

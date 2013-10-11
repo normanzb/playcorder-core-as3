@@ -1,12 +1,23 @@
 package interoperators
 {
+    import com.codecatalyst.promise.Deferred;
+    import com.codecatalyst.promise.Promise;
     import AudioHelper;
 
     public class Interoperator
     {
         protected var audioHelper:AudioHelper;
 
-        protected function init():void
+        protected function init():Promise
+        {
+            var dfd:Deferred = new Deferred();
+
+            dfd.resolve( null );
+
+            return dfd.promise;
+        }
+
+        protected function onReady():void
         {
 
         }
@@ -15,7 +26,11 @@ package interoperators
         {
             audioHelper = adHlp;
 
-            init();
+            var prm:Promise = init();
+            prm.then(function():void
+            {
+                onReady();
+            });
         }
     }
 }
