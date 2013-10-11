@@ -4,7 +4,7 @@ package interoperators
 
     import interoperators.Factory;
     import connectors.IConnectable;
-    import AudioHelper;
+    import Playcorder;
     import events.RecorderEvent;
     import events.RecorderErrorEvent;
     import events.RecorderChangeEvent;
@@ -111,14 +111,14 @@ package interoperators
             {
                 MonsterDebugger.trace(this, 'external calls to player.start()');
 
-                audioHelper.player.start( path );
+                playcorder.player.start( path );
             });
 
             ExternalInterface.addCallback("player_stop", function():void
             {
                 MonsterDebugger.trace(this, 'external calls to player.stop()');
 
-                audioHelper.player.stop();
+                playcorder.player.stop();
             });
 
             ExternalInterface.addCallback("recorder_start", function():String
@@ -127,7 +127,7 @@ package interoperators
 
                 MonsterDebugger.trace(this, 'external calls to recorder.start()');
 
-                var ticket:Ticket = audioHelper.recorder.start();
+                var ticket:Ticket = playcorder.recorder.start();
 
                 if (ticket is GUIDTicket)
                 {
@@ -142,7 +142,7 @@ package interoperators
                 
                 MonsterDebugger.trace(this, 'external calls to recorder.stop()');
 
-                audioHelper.recorder.stop();
+                playcorder.recorder.stop();
             });
 
             ExternalInterface.addCallback("recorder_activity", function():Number
@@ -150,8 +150,8 @@ package interoperators
 
                 var ret:Number = 0;
 
-                if (audioHelper.recorder && audioHelper.recorder.microphone){
-                    ret = audioHelper.recorder.microphone.activityLevel;
+                if (playcorder.recorder && playcorder.recorder.microphone){
+                    ret = playcorder.recorder.microphone.activityLevel;
                 }
 
                 return ret;
@@ -163,8 +163,8 @@ package interoperators
 
                 MonsterDebugger.trace(this, 'external calls to recorder.muted()');
 
-                if (audioHelper.recorder && audioHelper.recorder.microphone){
-                    ret = audioHelper.recorder.microphone.muted;
+                if (playcorder.recorder && playcorder.recorder.microphone){
+                    ret = playcorder.recorder.microphone.muted;
                 }
 
                 return ret;
@@ -174,9 +174,9 @@ package interoperators
             {
                 var ret:String = '';
 
-                if (audioHelper.recorder is IConnectable)
+                if (playcorder.recorder is IConnectable)
                 {
-                    var connectable:IConnectable = IConnectable(audioHelper.recorder);
+                    var connectable:IConnectable = IConnectable(playcorder.recorder);
 
                     MonsterDebugger.trace(this, 'external calls to recorder.connect()');
 
@@ -195,9 +195,9 @@ package interoperators
             {
                 
 
-                if (audioHelper.recorder is IConnectable)
+                if (playcorder.recorder is IConnectable)
                 {
-                    var connectable:IConnectable = IConnectable(audioHelper.recorder);
+                    var connectable:IConnectable = IConnectable(playcorder.recorder);
 
                     MonsterDebugger.trace(this, 'external calls to recorder.disconnect()');
 
@@ -208,31 +208,31 @@ package interoperators
             ExternalInterface.addCallback("recorder_initialize", function(config:Object):Boolean
             {
 
-                var ret:Boolean = audioHelper.init_recorder(config);
+                var ret:Boolean = playcorder.init_recorder(config);
 
-                audioHelper.recorder.addEventListener(RecorderEvent.CONNECTED, onRecorderConnected);
-                audioHelper.recorder.addEventListener(RecorderEvent.DISCONNECTED, onRecorderDisconnected);
-                audioHelper.recorder.addEventListener(RecorderEvent.STARTED, onRecorderStarted);
-                audioHelper.recorder.addEventListener(RecorderEvent.STOPPED, onRecorderStopped);
-                audioHelper.recorder.addEventListener(RecorderEvent.ERROR, onRecorderError);
-                audioHelper.recorder.addEventListener(RecorderChangeEvent.CHANGE, onRecorderChange);
+                playcorder.recorder.addEventListener(RecorderEvent.CONNECTED, onRecorderConnected);
+                playcorder.recorder.addEventListener(RecorderEvent.DISCONNECTED, onRecorderDisconnected);
+                playcorder.recorder.addEventListener(RecorderEvent.STARTED, onRecorderStarted);
+                playcorder.recorder.addEventListener(RecorderEvent.STOPPED, onRecorderStopped);
+                playcorder.recorder.addEventListener(RecorderEvent.ERROR, onRecorderError);
+                playcorder.recorder.addEventListener(RecorderChangeEvent.CHANGE, onRecorderChange);
 
                 return ret;
             });
 
             ExternalInterface.addCallback("player_initialize", function(config:Object):Boolean
             {
-                var ret:Boolean = audioHelper.init_player(config);
+                var ret:Boolean = playcorder.init_player(config);
 
-                audioHelper.player.addEventListener(PlayerEvent.STARTED, onPlayerStarted);
-                audioHelper.player.addEventListener(PlayerEvent.STOPPED, onPlayerStopped);
+                playcorder.player.addEventListener(PlayerEvent.STARTED, onPlayerStarted);
+                playcorder.player.addEventListener(PlayerEvent.STOPPED, onPlayerStopped);
 
                 return ret;
             });
 
             ExternalInterface.addCallback("prepare", function():Boolean
             {
-                return audioHelper.prepare();
+                return playcorder.prepare();
             });
 
             ExternalInterface.addCallback("getID", function():Number
@@ -253,11 +253,11 @@ package interoperators
             callSelf('onready');
         }
 
-        public function UniversalInteroperator(audioHelper:AudioHelper)
+        public function UniversalInteroperator(playcorder:Playcorder)
         {
             _count = instanceCount++;
             _findSelf = (<![CDATA[
-                function audioHelperBuiltinFindHostObject(methodName, arg1, arg2)
+                function playcorderBuiltinFindHostObject(methodName, arg1, arg2)
                 {
                     var id = <ID>;
                     var objs = document.getElementsByTagName('object');
@@ -276,7 +276,7 @@ package interoperators
                     }
                 }
             ]]>).toString().replace(/\<ID\>/g, _count);
-            super(audioHelper);
+            super(playcorder);
         }
     }
 }

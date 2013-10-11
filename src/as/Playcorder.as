@@ -11,15 +11,15 @@ package
     import com.codecatalyst.promise.Deferred;
     import com.codecatalyst.promise.Promise;
 
-    import events.AudioHelperEvent;
+    import events.PlaycorderEvent;
     import recorders.Recorder;
     import players.Player;
     import interoperators.Interoperator;
 
     [SWF(width="240", height="160", frameRate="24", backgroundColor="#FFFFFF")]
-    public class AudioHelper extends Sprite
+    public class Playcorder extends Sprite
     {
-        public const NAME:String = 'AudioHelper';
+        public const NAME:String = 'Playcorder';
 
         public var recorder:Recorder;
         public var player:Player;
@@ -44,7 +44,7 @@ package
             }
         }
 
-        public function AudioHelper()
+        public function Playcorder()
         {
             // Start the MonsterDebugger
             MonsterDebugger.initialize(this);

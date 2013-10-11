@@ -1,6 +1,6 @@
 {
-    "name": "audio-helper",
-    "version": "0.0.1",
+    "name": "Playcorder",
+    "version": "0.0.2",
     "dependencies": {
         "flex-sdk": "~4.6.0",
         "grunt": "~0.4.1",

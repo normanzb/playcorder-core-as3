@@ -47,7 +47,7 @@ module.exports = function(grunt) {
                 }
             },
             'as3': {
-                command: '_placeholder_ AudioHelper.as -library-path+=../../lib/ -output ../../dist/AudioHelper.swf',
+                command: '_placeholder_ Playcorder.as -library-path+=../../lib/ -output ../../dist/Playcorder.swf',
                 options: {
                     stdout: true,
                     stderr: true,

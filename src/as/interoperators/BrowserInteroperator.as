@@ -3,7 +3,7 @@ package interoperators
     import flash.external.ExternalInterface;
     import flash.system.Security;
 
-    import AudioHelper;
+    import Playcorder;
     import interoperators.UniversalInteroperator;
 
     import com.demonsters.debugger.MonsterDebugger;
@@ -35,7 +35,7 @@ package interoperators
 
             // get domain name from browser
             var curDomain:String = ExternalInterface.call((<![CDATA[
-                function audioHelperBuiltinGetDomain()
+                function playcorderBuiltinGetDomain()
                 {
                     return location.hostname
                 }
@@ -68,7 +68,7 @@ package interoperators
             return dfd.promise;
         }
 
-        public function BrowserInteroperator(adHlp:AudioHelper)
+        public function BrowserInteroperator(adHlp:Playcorder)
         {
             super(adHlp);
         }

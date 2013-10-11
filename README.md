@@ -1,4 +1,4 @@
-#Audio-Helper
+#Playcorder
 
 Audio Player and Recorder written in ActionScript3 with JavaScript interface.
 
@@ -26,7 +26,7 @@ Audio Player and Recorder written in ActionScript3 with JavaScript interface.
    
 ##Debug
 
-To see logs from audio-helper, install MonsterDebugger <http://www.monsterdebugger.com>
+To see logs from Playcorder, install MonsterDebugger <http://www.monsterdebugger.com>
 
 ##API
 

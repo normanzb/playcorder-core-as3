@@ -2,11 +2,11 @@ package interoperators
 {
     import com.codecatalyst.promise.Deferred;
     import com.codecatalyst.promise.Promise;
-    import AudioHelper;
+    import Playcorder;
 
     public class Interoperator
     {
-        protected var audioHelper:AudioHelper;
+        protected var playcorder:Playcorder;
 
         protected function init():Promise
         {
@@ -22,9 +22,9 @@ package interoperators
 
         }
 
-        public function Interoperator(adHlp:AudioHelper)
+        public function Interoperator(adHlp:Playcorder)
         {
-            audioHelper = adHlp;
+            playcorder = adHlp;
 
             var prm:Promise = init();
             prm.then(function():void

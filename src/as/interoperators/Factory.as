@@ -5,7 +5,7 @@ package interoperators
     import factories.IFactory;
     import interoperators.UniversalInteroperator;
     import interoperators.BrowserInteroperator;
-    import AudioHelper;
+    import Playcorder;
 
     public class Factory implements IFactory
     {
@@ -18,7 +18,7 @@ package interoperators
         public function produce(adHlp:Object):Object
         {
             var env:String = ENV_NONE;
-            var audioHelper:AudioHelper = AudioHelper(adHlp);
+            var playcorder:Playcorder = Playcorder(adHlp);
 
             if (ExternalInterface.available)
             {
@@ -36,10 +36,10 @@ package interoperators
             switch(env)
             {
                 case ENV_BROWSER:
-                    ret = new BrowserInteroperator(audioHelper);
+                    ret = new BrowserInteroperator(playcorder);
                     break;
                 default:
-                    ret = new UniversalInteroperator(audioHelper);
+                    ret = new UniversalInteroperator(playcorder);
                     break;
             }
 
