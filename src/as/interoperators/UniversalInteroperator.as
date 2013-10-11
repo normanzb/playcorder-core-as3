@@ -19,14 +19,37 @@ package interoperators
     public class UniversalInteroperator extends Interoperator
     {
         private static var instanceCount:Number = 0;
+        public static const MEMBER_NAME:Object = {
+            RECORDER_ONCONNECTED    : 'recorder_onconnected',
+            RECORDER_ONDISCONNECTED : 'recorder_ondisconnected',
+            RECORDER_ONSTARTED      : 'recorder_onstarted',
+            RECORDER_ONSTOPPED      : 'recorder_onstopped',
+            RECORDER_ONERROR        : 'recorder_onerror',
+            RECORDER_ONCHANGE       : 'recorder_onchange',
+            RECORDER_CONNECT        : 'recorder_connect',
+            RECORDER_DISCONNECT     : 'recorder_disconnect',
+            RECORDER_START          : 'recorder_start',
+            RECORDER_STOP           : 'recorder_stop',
+            RECORDER_ACTIVITY       : 'recorder_activity',
+            RECORDER_MUTED          : 'recorder_muted',
+            RECORDER_INITIALIZE     : 'recorder_initialize',
+            PLAYER_ONSTARTED        : 'player_onstarted',
+            PLAYER_ONSTOPPED        : 'player_onstopped',
+            PLAYER_START            : 'player_start',
+            PLAYER_STOP             : 'player_stop',
+            PLAYER_INITIALIZE       : 'player_initialize',
+            ONREADY                 : 'onready',
+            GETID                   : 'getID',
+            PREPARE                 : 'prepare'
+        };
 
         private var _inited:Boolean = false;
-        private var _count:Number = 0;
         private var _findSelf:String;
+        protected var _count:Number = 0;
 
         private function onRecorderConnected(event:RecorderEvent):void
         {
-            callSelf('recorder_onconnected', 
+            callSelf(MEMBER_NAME.RECORDER_ONCONNECTED, 
             {
                 'guid': event.guid.toString()
             })
@@ -34,7 +57,7 @@ package interoperators
 
         private function onRecorderDisconnected(event:RecorderEvent):void
         {
-            callSelf('recorder_ondisconnected', 
+            callSelf(MEMBER_NAME.RECORDER_ONDISCONNECTED, 
             {
                 'guid': event.guid.toString()
             })
@@ -42,7 +65,7 @@ package interoperators
 
         private function onRecorderStarted(event:RecorderEvent):void
         {
-            callSelf('recorder_onstarted', 
+            callSelf(MEMBER_NAME.RECORDER_ONSTARTED, 
             {
                 'guid': event.guid.toString()
             })
@@ -50,7 +73,7 @@ package interoperators
 
         private function onRecorderStopped(event:RecorderEvent):void
         {
-            callSelf('recorder_onstopped', 
+            callSelf(MEMBER_NAME.RECORDER_ONSTOPPED, 
             {
                 'guid': event.guid.toString()
             })
@@ -58,7 +81,7 @@ package interoperators
 
         private function onRecorderError(event:RecorderErrorEvent):void
         {
-            callSelf('recorder_onerror',
+            callSelf(MEMBER_NAME.RECORDER_ONERROR,
             {
                 'guid': event.guid ? event.guid.toString():'',
                 'code': event.code
@@ -67,7 +90,7 @@ package interoperators
 
         private function onRecorderChange(event:RecorderChangeEvent):void
         {
-            callSelf('recorder_onchange',
+            callSelf(MEMBER_NAME.RECORDER_ONCHANGE,
             {
                 'code': event.code
             })
@@ -75,14 +98,14 @@ package interoperators
 
         private function onPlayerStarted(event:PlayerEvent):void
         {
-            callSelf('player_onstarted', 
+            callSelf(MEMBER_NAME.PLAYER_ONSTARTED, 
             {
             })
         }
 
         private function onPlayerStopped(event:PlayerEvent):void
         {
-            callSelf('player_onstopped', 
+            callSelf(MEMBER_NAME.PLAYER_ONSTOPPED, 
             {
             })
         }
@@ -107,21 +130,21 @@ package interoperators
                 return dfd.promise;
             }
 
-            ExternalInterface.addCallback("player_start", function(path:String):void
+            ExternalInterface.addCallback(MEMBER_NAME.PLAYER_START, function(path:String):void
             {
                 MonsterDebugger.trace(this, 'external calls to player.start()');
 
                 playcorder.player.start( path );
             });
 
-            ExternalInterface.addCallback("player_stop", function():void
+            ExternalInterface.addCallback(MEMBER_NAME.PLAYER_STOP, function():void
             {
                 MonsterDebugger.trace(this, 'external calls to player.stop()');
 
                 playcorder.player.stop();
             });
 
-            ExternalInterface.addCallback("recorder_start", function():String
+            ExternalInterface.addCallback(MEMBER_NAME.RECORDER_START, function():String
             {
                 var ret:String = '';
 
@@ -137,7 +160,7 @@ package interoperators
                 return ret;
             });
 
-            ExternalInterface.addCallback("recorder_stop", function():void
+            ExternalInterface.addCallback(MEMBER_NAME.RECORDER_STOP, function():void
             {
                 
                 MonsterDebugger.trace(this, 'external calls to recorder.stop()');
@@ -145,7 +168,7 @@ package interoperators
                 playcorder.recorder.stop();
             });
 
-            ExternalInterface.addCallback("recorder_activity", function():Number
+            ExternalInterface.addCallback(MEMBER_NAME.RECORDER_ACTIVITY, function():Number
             {
 
                 var ret:Number = 0;
@@ -157,7 +180,7 @@ package interoperators
                 return ret;
             });
 
-            ExternalInterface.addCallback("recorder_muted", function():Boolean
+            ExternalInterface.addCallback(MEMBER_NAME.RECORDER_MUTED, function():Boolean
             {
                 var ret:Boolean = true;
 
@@ -170,7 +193,7 @@ package interoperators
                 return ret;
             });
 
-            ExternalInterface.addCallback("recorder_connect", function():String
+            ExternalInterface.addCallback(MEMBER_NAME.RECORDER_CONNECT, function():String
             {
                 var ret:String = '';
 
@@ -191,7 +214,7 @@ package interoperators
                 return ret;
             });
 
-            ExternalInterface.addCallback("recorder_disconnect", function():void
+            ExternalInterface.addCallback(MEMBER_NAME.RECORDER_DISCONNECT, function():void
             {
                 
 
@@ -205,7 +228,7 @@ package interoperators
                 }
             });
 
-            ExternalInterface.addCallback("recorder_initialize", function(config:Object):Boolean
+            ExternalInterface.addCallback(MEMBER_NAME.RECORDER_INITIALIZE, function(config:Object):Boolean
             {
 
                 var ret:Boolean = playcorder.init_recorder(config);
@@ -220,7 +243,7 @@ package interoperators
                 return ret;
             });
 
-            ExternalInterface.addCallback("player_initialize", function(config:Object):Boolean
+            ExternalInterface.addCallback(MEMBER_NAME.PLAYER_INITIALIZE, function(config:Object):Boolean
             {
                 var ret:Boolean = playcorder.init_player(config);
 
@@ -230,12 +253,12 @@ package interoperators
                 return ret;
             });
 
-            ExternalInterface.addCallback("prepare", function():Boolean
+            ExternalInterface.addCallback(MEMBER_NAME.PREPARE, function():Boolean
             {
                 return playcorder.prepare();
             });
 
-            ExternalInterface.addCallback("getID", function():Number
+            ExternalInterface.addCallback(MEMBER_NAME.GETID, function():Number
             {
                 return _count;
             });
@@ -251,10 +274,10 @@ package interoperators
         protected override function onReady():void
         {
             // fire ready event when it is ready
-            callSelf('onready');
+            callSelf( MEMBER_NAME.ONREADY );
         }
 
-        protected function externalInstanceLookup(id:Number):String
+        protected function getFuncToInvokeExternalHostMethod(id:Number):String
         {
             return "";
         }
@@ -262,7 +285,7 @@ package interoperators
         public function UniversalInteroperator(playcorder:Playcorder)
         {
             _count = instanceCount++;
-            _findSelf = externalInstanceLookup( _count );
+            _findSelf = getFuncToInvokeExternalHostMethod( _count );
             super(playcorder);
         }
     }
