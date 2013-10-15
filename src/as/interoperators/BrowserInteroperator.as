@@ -5,6 +5,7 @@ package interoperators
 
     import Playcorder;
     import interoperators.UniversalInteroperator;
+    import security.permissions.MicrophonePermission;
 
     import com.demonsters.debugger.MonsterDebugger;
     import com.codecatalyst.promise.Deferred;
@@ -14,20 +15,15 @@ package interoperators
     {
         private var _init:Boolean = false;
         private var _funcToGetExternalHost:String = '';
-        private const DOMAINS:Array = [
-            "ef.com",
-            "ef.com.cn",
-            "englishtown.com",
-            "englishtown.com.cn",
-            "englishtown.com.br",
-            "englishtown.com.hk",
-            "englishtown.co.jp",
-            "englishtown.co.kr"
-        ];
+        private var _micPrmsn:MicrophonePermission;
 
         protected override function init():Promise
         {
+            var me:Interoperator = this;
             var dfd:Deferred = new Deferred();
+
+            // allow all domain to talk
+            Security.allowDomain("*");
 
             if (!ExternalInterface.available || _init == true){
                 dfd.resolve( null );
@@ -38,29 +34,14 @@ package interoperators
             var curDomain:String = ExternalInterface.call((<![CDATA[
                 function playcorderBuiltinGetDomain()
                 {
-                    return location.hostname
+                    return location.hostname;
                 }
             ]]>).toString());
 
+            // save domain name 
+            this.data['domain'] = curDomain;
+
             MonsterDebugger.trace(this, 'got domain name: ' + curDomain);
-
-            // only allow ef domains to talk
-            if (
-                curDomain != null && 
-
-                new RegExp("(\\.|^)(" + 
-                    DOMAINS.join('|').replace(/\./g, '\\.') + 
-                    ")$").test(curDomain)
-
-            )
-            {
-                MonsterDebugger.trace(this, 'domain name checking passed');
-                Security.allowDomain(curDomain);
-            }
-            else
-            {
-                MonsterDebugger.trace(this, 'domain name checking failed');
-            }
 
             dfd.resolve(super.init());
 
@@ -125,6 +106,29 @@ package interoperators
                     ExternalInterface.call(
                         (strStart + _funcToGetExternalHost + strEnd).replace(/\<ID\>/g, _count), UniversalInteroperator.MEMBER_NAME
                     );
+                })
+                .then(function():Promise
+                {
+                    // try to get permission to access the mic
+                    MonsterDebugger.trace(this, 'try to get permission to access the mic');
+
+                    _micPrmsn = new MicrophonePermission( me );    
+
+                    return _micPrmsn
+                        .request()
+                        .then(
+                            function():void
+                            {
+                                disabled = false;
+                                // TODO: expose events
+                                MonsterDebugger.trace(this, 'Microphone permission granted');
+                            }, 
+                            function():void
+                            {
+                                disabled = true;
+                                MonsterDebugger.trace(this, 'Microphone permission rejected');
+                            }
+                        );
                 });
         }
 
@@ -189,6 +193,9 @@ package interoperators
             ]]>).toString();
             
             super(adHlp);
+
+            // disable by default
+            disabled = true;
         }
     }
 }

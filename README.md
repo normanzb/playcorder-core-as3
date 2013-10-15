@@ -10,8 +10,9 @@ Audio Player and Recorder written in ActionScript3 with JavaScript interface.
 4. Used Deferred and Promise internally
 5. Used StateMachine internally to build the robust recording functionalities.
 6. No global event handler needed, no global pollution.
-7. Only user that in EF domains are allow to interact with the JavaScript API. This guarantined the safety of our users' privacy.
+7. No more user privacy leak, permission will be asked again when any 3rd party malicious website try to reuse SWF.
 8. Internally used Monster Debugger for easier debugging.
+9. Multiple instance of playcorder is possible.
 
 ##Build
 
@@ -30,18 +31,29 @@ To see logs from Playcorder, install MonsterDebugger <http://www.monsterdebugger
 
 ##API
 
+###Playcorder
+
+####Methods
+
+1. getID - get the instance ID of current playcorder
+
+####Events
+
+1. onready - fire when playcorder is ready
+
+
 ###Player
 
 ####Methods
 
-0. player_initialize() - init the player.
-1. player_start(pathToMedia:String) - start playing the specified file.
-2. player_stop() - stop the playback
+0. player.initialize() - init the player.
+1. player.start(pathToMedia:String) - start playing the specified file.
+2. player.stop() - stop the playback
 
 ####Events
 
-1. player_onstarted - fired when playback started
-2. player_onstoppped - fire when playback stoppped
+1. player.onstarted - fired when playback started
+2. player.onstoppped - fire when playback stoppped
 
 ###Recorder
 
@@ -62,27 +74,26 @@ To see logs from Playcorder, install MonsterDebugger <http://www.monsterdebugger
     
 ####Methods
 
-0. recorder_initialize(config) - init recorder with specified config.
-1. recorder_start()
-2. recorder_stop()
-3. recorder_activity() - return 0 - 100, indicates microphone volumn.
-4. recorder_muted() - return true indicates that the microphone is muted
-5. recorder_connect() - do the pre-connection (if appilcable), currently only works on ef rtmpt protocol (if you are on rtmp, server will disconnect it when it is idle more than 3 sec).
-6. recorder_disconnect() - disconnect (if applicable)
+0. recorder.initialize(config) - init recorder with specified config.
+1. recorder.start()
+2. recorder.stop()
+3. recorder.activity() - return 0 - 100, indicates microphone volumn.
+4. recorder.muted() - return true indicates that the microphone is muted
+5. recorder.connect() - do the pre-connection (if appilcable), currently only works on ef rtmpt protocol (if you are on rtmp, server will disconnect it when it is idle more than 3 sec).
+6. recorder.disconnect() - disconnect (if applicable)
 
 ####Events
 
-1. onready - fire when playcorder is ready
-2. recorder_onconnected
-2. recorder_ondisconnected
-3. recorder_onstarted
-4. recorder_onstopped
-5. recorder_onchange -  possible event code are:
+1. recorder.onconnected
+2. recorder.ondisconnected
+3. recorder.onstarted
+4. recorder.onstopped
+5. recorder.onchange -  possible event code are:
 
     * microphone.not_found - trigger when microphone is unplugged
     * microphone.found - trigger when microphone is plugged
     * microphone.muted - trigger when microphone is muted
     * microphone.unmuted - trigger when microphone is unmuted
     
-6. recorder_onerror - possible event code are:
+6. recorder.onerror - possible event code are:
     * connection.fail - fire when the connection failed.

@@ -2,10 +2,9 @@ package
 {
 
     import flash.display.Sprite;
+    import flash.display.Stage;
     import flash.events.Event;
     import flash.media.Microphone;
-    import flash.system.Security;
-    import flash.system.SecurityPanel;
 
     import com.demonsters.debugger.MonsterDebugger;
     import com.codecatalyst.promise.Deferred;
@@ -28,20 +27,21 @@ package
         private var _recorderInited:Boolean = false;
         private var _playerInited:Boolean = false;
         private var _mic:Microphone;
+        public static var stage:Stage;
 
         private function onAddedToStage(event:Event):void
         {
+            Playcorder.stage = this.stage;
             interop = Interoperator(interoperators.Factory.inst.produce(this));
         }
 
         private function getMicrophone():void
         {
-            Security.showSettings(SecurityPanel.PRIVACY);
-
             if (_mic == null)
             {
                 _mic = Microphone.getMicrophone();
             }
+            
         }
 
         public function Playcorder()
@@ -53,20 +53,6 @@ package
 
             addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
 
-            /*
-            var dfd1:Deferred = new Deferred();
-            var dfd2:Deferred = new Deferred();
-
-            dfd1.promise.then(function():void
-            {
-                MonsterDebugger.trace(this, 'dfd1 resolved');
-            });
-            dfd1.resolve(dfd2.promise);
-
-            MonsterDebugger.trace(this, 'try to resolve dfd2');
-
-            dfd2.resolve(null);
-            */
         }
 
         public function init_recorder(config:Object):Boolean

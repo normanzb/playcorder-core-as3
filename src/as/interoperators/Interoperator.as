@@ -7,6 +7,8 @@ package interoperators
     public class Interoperator
     {
         protected var playcorder:Playcorder;
+        public var data:Object = {};
+        protected var disabled:Boolean = false;
 
         protected function init():Promise
         {

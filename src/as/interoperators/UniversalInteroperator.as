@@ -47,6 +47,20 @@ package interoperators
         private var _findSelf:String;
         protected var _count:Number = 0;
 
+        private function secure(func:Function):Function
+        {
+            var me:Interoperator = this;
+            return function():*
+            {
+                if ( disabled ) 
+                {
+                    return;
+                }
+
+                return func.apply(me, arguments);
+            }
+        }
+
         private function onRecorderConnected(event:RecorderEvent):void
         {
             callSelf(MEMBER_NAME.RECORDER_ONCONNECTED, 
@@ -112,6 +126,11 @@ package interoperators
 
         protected function callSelf(methodName:String, ... args:*):void
         {
+            if ( disabled )
+            {
+                return;
+            }
+            
             ExternalInterface.call.apply
             (
                 ExternalInterface, 
@@ -216,8 +235,6 @@ package interoperators
 
             ExternalInterface.addCallback(MEMBER_NAME.RECORDER_DISCONNECT, function():void
             {
-                
-
                 if (playcorder.recorder is IConnectable)
                 {
                     var connectable:IConnectable = IConnectable(playcorder.recorder);
@@ -286,7 +303,10 @@ package interoperators
         {
             _count = instanceCount++;
             _findSelf = getFuncToInvokeExternalHostMethod( _count );
+
             super(playcorder);
+
+            data['id'] = _count;
         }
     }
 }
