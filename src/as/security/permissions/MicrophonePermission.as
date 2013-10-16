@@ -25,12 +25,29 @@ package security.permissions
         private var _requesting:Deferred;
         private var _uiMicPanel:MicrophonePermissionPanel;
         private var onMicStatus:Function;
+        private var onMicAllowed:Function;
+        private var onMicRejected:Function;
         private var _stateMachine:StateMachine = new StateMachine(['idle', 'grant', 'granting', 'granted']);
         private var _waitingForUnmute:Boolean = false;
         private var _safeList:SharedObject;
         private var _curDomain:String;
 
         private const NAME_SHARED:String = '__playcorder_safe_domain_list';
+
+        private function disposeMicPanel():void
+        {
+
+            _uiMicPanel.removeEventListener(
+                'allowed',
+                onMicAllowed
+            );
+            _uiMicPanel.removeEventListener(
+                'rejected',
+                onMicRejected
+            );
+
+            Playcorder.stage.removeChild( _uiMicPanel );
+        }
 
         private function onStateIdle(event:events.StatusEvent):void
         {
@@ -92,21 +109,23 @@ package security.permissions
                     _uiMicPanel = new MicrophonePermissionPanel()
                     _uiMicPanel.domain = _curDomain;
                     Playcorder.stage.addChild( _uiMicPanel );
+                    onMicAllowed = function allowedHandler(evt:Event):void
+                    {
+                        dfd.resolve( null );
+                        disposeMicPanel();
+                    };
+                    onMicRejected = function rejectedHandler(evt:Event):void
+                    {
+                        dfd.reject( null );
+                        disposeMicPanel();
+                    };
                     _uiMicPanel.addEventListener( 
                         'allowed', 
-                        function allowedHandler(evt:Event):void
-                        {
-                            dfd.resolve( null );
-                            _uiMicPanel.removeEventListener('allowed', allowedHandler);
-                        }
+                        onMicAllowed
                     );
                     _uiMicPanel.addEventListener( 
                         'rejected', 
-                        function rejectedHandler(evt:Event):void
-                        {
-                            dfd.reject( null );
-                            _uiMicPanel.removeEventListener('rejected', rejectedHandler);
-                        }
+                        onMicRejected
                     );
                 }
             }
@@ -131,7 +150,7 @@ package security.permissions
             }
             else
             {
-
+                disposeMicPanel();
             }
 
             // adding the website to local storage
