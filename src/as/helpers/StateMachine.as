@@ -54,7 +54,7 @@ package helpers
 
             if ( this._inLoop == null )
             {
-                MonsterDebugger.trace(me, 'create a new Deferred');
+                MonsterDebugger.trace(me, 'create a new _inLoop Deferred');
 
                 this._inLoop = new Deferred();
             }
@@ -70,9 +70,14 @@ package helpers
 
             evt = new StatusEvent( newStatus , value );
 
+            MonsterDebugger.trace( me, 'Dispatching state event: ' + newStatus );
+
             this.dispatchEvent( evt );
 
             this._status = newStatus;
+
+            MonsterDebugger.trace(me,  
+                        'hook promise event');
 
             evt
                 .promise
@@ -96,6 +101,9 @@ package helpers
                     _inLoop = null;
                 });
 
+            MonsterDebugger.trace(me,  
+                        'hook promise event done');
+
         }
 
         public function StateMachine(states:Array)
@@ -106,6 +114,8 @@ package helpers
             {
                 this.states[l] = this.states[l].toLowerCase();
             }
+
+            _status = states[_cur];
         }
 
         public function gotoStatus(value:String):Promise
