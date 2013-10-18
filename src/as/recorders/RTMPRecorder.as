@@ -11,7 +11,6 @@ package recorders
     import com.codecatalyst.promise.Deferred;
     import com.codecatalyst.promise.Promise;
 
-    // self created
     import helpers.StateMachine;
     import events.StatusEvent;
     import events.RecorderEvent;
@@ -66,6 +65,11 @@ package recorders
 
             MonsterDebugger.trace(this, 'status changed to connect');
 
+            if ( _queueGUID.length > 0 ) 
+            {
+                _currentGUID = _queueGUID.shift();
+            }
+
             if (event.targetStatus == 'disconnect' || event.targetStatus == 'stop_stream')
             {
                 return;
@@ -75,11 +79,6 @@ package recorders
             {
                 return;
             }
-
-            MonsterDebugger.trace(this, 'pop guid');
-
-            // record current guid
-            // _currentGUID = _queueGUID.pop();
             
             _dfdConnect = new Deferred();
 
@@ -354,11 +353,7 @@ package recorders
 
             ret = new GUIDTicket(dfd.promise);
 
-            _stateMachine.gotoStatus('idle')
-                .then(function():void
-                {
-                    _currentGUID = ret.guid;
-                });
+            _queueGUID.push(ret.guid);
 
             prm = _stateMachine.gotoStatus('connect');
 
