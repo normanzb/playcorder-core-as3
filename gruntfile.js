@@ -47,13 +47,13 @@ module.exports = function(grunt) {
                 }
             },
             'as3': {
-                command: '_placeholder_ Playcorder.as -library-path+=../../lib/ -output ../../dist/Playcorder.swf',
+                command: '_placeholder_ Playcorder.as -library-path+=../lib/ -output ../dist/Playcorder.swf',
                 options: {
                     stdout: true,
                     stderr: true,
                     failOnError: true,
                     execOptions: {
-                        cwd: 'src/as'
+                        cwd: 'src'
                     }
                 }
             }
