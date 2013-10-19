@@ -79,7 +79,7 @@ package recorders
 
             _mic.removeEventListener( SampleDataEvent.SAMPLE_DATA, onSampleData );
 
-            _result = new RAWAudioContainer()
+            _result = new RAWAudioContainer( _mic );
             _result.data = _buffer;
 
             nextTick(function():void

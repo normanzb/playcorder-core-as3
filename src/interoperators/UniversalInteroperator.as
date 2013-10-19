@@ -293,7 +293,7 @@ package interoperators
 
                 if ( playcorder.recorder && playcorder.recorder.result )
                 {
-                    ticket = playcorder.recorder.result.download('binary-string');
+                    ticket = playcorder.recorder.result.download('byte-array');
 
                     if ( ticket is GUIDTicket )
                     {
@@ -312,7 +312,9 @@ package interoperators
                                             {
                                                 guid: obj.guid.toString(),
                                                 data: obj.data,
-                                                length: obj.length
+                                                length: obj.length,
+                                                channels: obj.channels,
+                                                rate: obj.rate
                                             }
                                         );
                                     })
