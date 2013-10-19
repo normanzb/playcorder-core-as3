@@ -31,11 +31,16 @@ package security.permissions
         private var _waitingForUnmute:Boolean = false;
         private var _safeList:SharedObject;
         private var _curDomain:String;
+        private var _uiMicPanelDisposed:Boolean = true;
 
         private const NAME_SHARED:String = '__playcorder_safe_domain_list';
 
         private function disposeMicPanel():void
         {
+            if ( _uiMicPanelDisposed )
+            {
+                return;
+            }
 
             _uiMicPanel.removeEventListener(
                 'allowed',
@@ -46,7 +51,10 @@ package security.permissions
                 onMicRejected
             );
 
-            Playcorder.stage.removeChild( _uiMicPanel );
+            if (Playcorder.stage.contains( _uiMicPanel ))
+            {
+                Playcorder.stage.removeChild( _uiMicPanel );
+            }
         }
 
         private function onStateIdle(event:events.StatusEvent):void
@@ -109,6 +117,7 @@ package security.permissions
                     _uiMicPanel = new MicrophonePermissionPanel()
                     _uiMicPanel.domain = _curDomain;
                     Playcorder.stage.addChild( _uiMicPanel );
+                    _uiMicPanelDisposed = false;
                     onMicAllowed = function allowedHandler(evt:Event):void
                     {
                         dfd.resolve( null );
