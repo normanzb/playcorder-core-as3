@@ -15,32 +15,39 @@ package interoperators
     import com.demonsters.debugger.MonsterDebugger;
     import com.codecatalyst.promise.Deferred;
     import com.codecatalyst.promise.Promise;
+    import com.codecatalyst.util.*;
 
     public class UniversalInteroperator extends Interoperator
     {
         private static var instanceCount:Number = 0;
         public static const MEMBER_NAME:Object = {
-            RECORDER_ONCONNECTED    : 'recorder_onconnected',
-            RECORDER_ONDISCONNECTED : 'recorder_ondisconnected',
-            RECORDER_ONSTARTED      : 'recorder_onstarted',
-            RECORDER_ONSTOPPED      : 'recorder_onstopped',
-            RECORDER_ONERROR        : 'recorder_onerror',
-            RECORDER_ONCHANGE       : 'recorder_onchange',
-            RECORDER_CONNECT        : 'recorder_connect',
-            RECORDER_DISCONNECT     : 'recorder_disconnect',
-            RECORDER_START          : 'recorder_start',
-            RECORDER_STOP           : 'recorder_stop',
-            RECORDER_ACTIVITY       : 'recorder_activity',
-            RECORDER_MUTED          : 'recorder_muted',
-            RECORDER_INITIALIZE     : 'recorder_initialize',
-            PLAYER_ONSTARTED        : 'player_onstarted',
-            PLAYER_ONSTOPPED        : 'player_onstopped',
-            PLAYER_START            : 'player_start',
-            PLAYER_STOP             : 'player_stop',
-            PLAYER_INITIALIZE       : 'player_initialize',
-            ONREADY                 : 'onready',
-            GETID                   : 'getID',
-            PREPARE                 : 'prepare'
+            RECORDER_ONCONNECTED                    : 'recorder_onconnected',
+            RECORDER_ONDISCONNECTED                 : 'recorder_ondisconnected',
+            RECORDER_ONSTARTED                      : 'recorder_onstarted',
+            RECORDER_ONSTOPPED                      : 'recorder_onstopped',
+            RECORDER_ONERROR                        : 'recorder_onerror',
+            RECORDER_ONCHANGE                       : 'recorder_onchange',
+            RECORDER_CONNECT                        : 'recorder_connect',
+            RECORDER_DISCONNECT                     : 'recorder_disconnect',
+            RECORDER_START                          : 'recorder_start',
+            RECORDER_STOP                           : 'recorder_stop',
+            RECORDER_ACTIVITY                       : 'recorder_activity',
+            RECORDER_MUTED                          : 'recorder_muted',
+            RECORDER_INITIALIZE                     : 'recorder_initialize',
+            RECORDER_RESULT_TYPE                    : 'recorder_result_type',
+            RECORDER_RESULT_DOWNLOAD                : 'recorder_result_download',
+            RECORDER_RESULT_ONDOWNLOADED            : 'recorder_result_ondownloaded',
+            RECORDER_RESULT_ONDOWNLOADFAILED        : 'recorder_result_ondownloadfailed',
+            RECORDER_RESULT_UPLOAD                  : 'recorder_result_upload',
+            RECORDER_RESULT_ONUPLOADED              : 'recorder_result_onuploaded',
+            PLAYER_ONSTARTED                        : 'player_onstarted',
+            PLAYER_ONSTOPPED                        : 'player_onstopped',
+            PLAYER_START                            : 'player_start',
+            PLAYER_STOP                             : 'player_stop',
+            PLAYER_INITIALIZE                       : 'player_initialize',
+            ONREADY                                 : 'onready',
+            GETID                                   : 'getID',
+            PREPARE                                 : 'prepare'
         };
 
         private var _inited:Boolean = false;
@@ -130,7 +137,9 @@ package interoperators
             {
                 return;
             }
-            
+
+            MonsterDebugger.trace(this, 'trigger ' + methodName);
+
             ExternalInterface.call.apply
             (
                 ExternalInterface, 
@@ -256,6 +265,93 @@ package interoperators
                 playcorder.recorder.addEventListener(RecorderEvent.STOPPED, onRecorderStopped);
                 playcorder.recorder.addEventListener(RecorderEvent.ERROR, onRecorderError);
                 playcorder.recorder.addEventListener(RecorderChangeEvent.CHANGE, onRecorderChange);
+
+                return ret;
+            });
+
+            ExternalInterface.addCallback(MEMBER_NAME.RECORDER_RESULT_TYPE, function():String
+            {
+                var ret:String = '';
+
+                MonsterDebugger.trace(this, 'external calls to recorder.result.type()');
+
+                if ( playcorder.recorder && playcorder.recorder.result )
+                {
+                    ret = playcorder.recorder.result.type;
+                }
+
+                return ret;
+            });
+
+            ExternalInterface.addCallback(MEMBER_NAME.RECORDER_RESULT_DOWNLOAD, function():String
+            {
+                var ret:String = '';
+                var ticket:Ticket;
+                var guidTicket:GUIDTicket;
+
+                MonsterDebugger.trace(this, 'external calls to recorder.result.download()');
+
+                if ( playcorder.recorder && playcorder.recorder.result )
+                {
+                    ticket = playcorder.recorder.result.download('binary-string');
+
+                    if ( ticket is GUIDTicket )
+                    {
+                        guidTicket = GUIDTicket(ticket);
+                        ret = guidTicket.guid.toString();
+
+                        guidTicket
+                            .promise
+                            .then(
+                                function(obj:Object):void
+                                {
+                                    nextTick(function():void
+                                    {
+                                        callSelf(
+                                            MEMBER_NAME.RECORDER_RESULT_ONDOWNLOADED,
+                                            {
+                                                guid: obj.guid.toString(),
+                                                data: obj.data,
+                                                length: obj.length
+                                            }
+                                        );
+                                    })
+                                },
+                                function(msg:String):void
+                                {
+                                    nextTick(function():void
+                                    {
+                                        callSelf(
+                                            MEMBER_NAME.RECORDER_RESULT_ONDOWNLOADFAILED,
+                                            msg
+                                        );
+                                    })
+                                }
+                            );
+
+
+                    }
+                }
+
+                return ret;
+            });
+
+            ExternalInterface.addCallback(MEMBER_NAME.RECORDER_RESULT_UPLOAD, function(url:String):String
+            {
+                var ret:String = '';
+                var ticket:Ticket;
+
+                MonsterDebugger.trace(this, 'external calls to recorder.result.upload()');
+
+                if ( playcorder.recorder && playcorder.recorder.result )
+                {
+                    ticket = playcorder.recorder.result.upload(url);
+
+                    if ( ticket is GUIDTicket )
+                    {
+                        ret = GUIDTicket(ticket).guid.toString();
+                    }
+                }
 
                 return ret;
             });

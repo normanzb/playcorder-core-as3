@@ -14,7 +14,7 @@ package tickets
 
         public function get promise():Promise
         {
-            return promise;
+            return _promise;
         }
     }
 }

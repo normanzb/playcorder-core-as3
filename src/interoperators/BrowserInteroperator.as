@@ -78,26 +78,44 @@ package interoperators
                                 
                                 var parts = value.split('_');
 
-                                if ( !(parts[0] in host) ) 
-                                {
-                                    host[ parts[0] ] = {};
-                                }
+                                (function recursion(){
+                                    
+                                    var parent = this;
+                                    var parts = Array.prototype.slice.call(arguments);
+                                    var member;
 
-                                if ( parts[1].indexOf('on') == 0 ) 
-                                {
-                                    host[ parts[0] ][ parts[1] ] = null;
-                                    host[ value ] = function()
+                                    if ( !(parts[0] in parent) ) 
                                     {
-                                        return host[ parts[0] ][ parts[1] ].apply(host, arguments);
-                                    };
-                                }
-                                else
-                                {
-                                    host[ parts[0] ][ parts[1] ] = function()
+                                        parent[ parts[0] ] = {};
+                                    }
+
+                                    member = parent[ parts[0] ];
+
+                                    if ( parts.length > 2 ) {
+                                        parts.shift();
+                                        recursion.apply( member, parts );
+                                    }
+                                    else if ( parts[1].indexOf('on') == 0 ) 
                                     {
-                                        return host[ value ].apply(host, arguments);
-                                    };
-                                }
+                                        member[ parts[1] ] = null;
+                                        host[ value ] = function()
+                                        {
+                                            if ( typeof member[ parts[1] ] == 'function')
+                                            {
+                                                return member[ parts[1] ].apply(host, arguments);
+                                            }
+
+                                            return null;
+                                        };
+                                    }
+                                    else
+                                    {
+                                        member[ parts[1] ] = function()
+                                        {
+                                            return host[ value ].apply(host, arguments);
+                                        };
+                                    }
+                                }).apply(host, parts);
 
                             })(name);
                         }

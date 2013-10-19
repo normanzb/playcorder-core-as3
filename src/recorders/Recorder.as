@@ -10,6 +10,7 @@ package recorders
     import events.RecorderChangeEvent;
     import com.demonsters.debugger.MonsterDebugger;
     import com.codecatalyst.util.*;
+    import data.containers.Container;
     
     public class Recorder extends EventDispatcher implements IRecordable 
     {
@@ -200,6 +201,11 @@ package recorders
         public function get microphone():Microphone
         {
             return _mic;
+        }
+
+        public function get result():Container
+        {
+            throw new Error('function is not implemented yet');
         }
     }
 }
