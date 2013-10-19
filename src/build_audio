@@ -1,2 +1,2 @@
-mxmlc Playcorder.as -library-path+=../../lib/ 
+mxmlc Playcorder.as -library-path+=../lib/ 
 mv Playcorder.swf ~/Projects/dl3/src/js/lib/recorderfl/dist/legacy/AudioHelper.swf
