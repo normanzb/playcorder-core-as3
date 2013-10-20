@@ -73,7 +73,7 @@ package data.containers
                             return;
                         }
                     }
-                    else if ( type == "wave-file" )
+                    else if ( type == "wave" )
                     {
                         var we:WaveEncoder = new WaveEncoder();
                         var sampleRates:Object = {
