@@ -27,7 +27,6 @@ package recorders
         private var _stateMachine:StateMachine = new StateMachine(['idle', 'start', 'record', 'stop']);
         private var _dfdRecording:Deferred;
         private var _buffer:ByteArray;
-        private var _result:RAWAudioContainer;
         private var _currentGUID:GUID;
         private var _queueGUID:Vector.<GUID> = new Vector.<GUID>();
 
@@ -137,11 +136,6 @@ package recorders
             dfd.resolve( _stateMachine.gotoStatus("stop") );
 
             return ret;
-        }
-
-        public override function get result():Container
-        {
-            return _result;
         }
     }
 }

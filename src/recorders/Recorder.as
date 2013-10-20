@@ -26,6 +26,7 @@ package recorders
         private var config:Object;
         private var timer:Timer;
         private var onMicStatus:Function;
+        protected var _result:Container;
 
         private var dispatchUnmuted:Function = function():void
         {
@@ -205,7 +206,7 @@ package recorders
 
         public function get result():Container
         {
-            throw new Error('function is not implemented yet');
+            return _result;
         }
     }
 }

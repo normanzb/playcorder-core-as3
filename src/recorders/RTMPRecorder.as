@@ -17,6 +17,7 @@ package recorders
     import events.RecorderErrorEvent;
     import recorders.Recorder;
     import connectors.IConnectable;
+    import data.containers.RemoteFileContainer;
     import tickets.Ticket;
     import tickets.GUIDTicket;
     import guids.GUID;
@@ -163,6 +164,8 @@ package recorders
 
         private function onStateStopStream(event:StatusEvent):void
         {
+            var me:RTMPRecorder = this;
+
             MonsterDebugger.trace(this, 'status changed to stop_stream, targetStatus is ' + event.targetStatus);
             
             if (_stream == null)
@@ -202,13 +205,21 @@ package recorders
             {
                 _dfdRecord
                     .resolve( dfd.promise );
-                _dfdRecord
-                    .promise.then(function():void
+
+                event.promise = _dfdRecord
+                    .promise
+                    .then(function():void
+                    {  
+                        _result = new RemoteFileContainer( me );
+                        _result.data = config['server'] + '/' + _currentGUID.toString(); 
+                    });
+
+                event
+                    .promise
+                    .then(function():void
                     {
                         _dfdRecord = null;
                     });
-
-                event.promise = _dfdRecord.promise;
             }
         }
 

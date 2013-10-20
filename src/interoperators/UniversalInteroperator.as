@@ -283,7 +283,7 @@ package interoperators
                 return ret;
             });
 
-            ExternalInterface.addCallback(MEMBER_NAME.RECORDER_RESULT_DOWNLOAD, function():String
+            ExternalInterface.addCallback(MEMBER_NAME.RECORDER_RESULT_DOWNLOAD, function(type:String = "raw"):String
             {
                 var ret:String = '';
                 var ticket:Ticket;
@@ -293,7 +293,8 @@ package interoperators
 
                 if ( playcorder.recorder && playcorder.recorder.result )
                 {
-                    ticket = playcorder.recorder.result.download('byte-array');
+                    
+                    ticket = playcorder.recorder.result.download( type );
 
                     if ( ticket is GUIDTicket )
                     {
@@ -347,7 +348,7 @@ package interoperators
 
                 if ( playcorder.recorder && playcorder.recorder.result )
                 {
-                    ticket = playcorder.recorder.result.upload(url);
+                    ticket = playcorder.recorder.result.upload(null, url);
 
                     if ( ticket is GUIDTicket )
                     {

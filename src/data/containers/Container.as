@@ -27,10 +27,10 @@ package data.containers
 
         public function download(type:String):Ticket
         {
-            throw "Not implemented"
+            throw "Not implemented";
         }
 
-        public function upload(url:String):Ticket
+        public function upload(type:String, url:String):Ticket
         {
             var dfd:Deferred = new Deferred();
             var ticket:GUIDTicket = new GUIDTicket(dfd.promise);
