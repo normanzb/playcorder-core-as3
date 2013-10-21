@@ -27,11 +27,16 @@
         <button id="mic-start">start</button>
         <button id="mic-stop" disabled="disabled">stopped</button>
         <button id="mic-download-raw" disabled="disabled">download as raw data</button>
-        <button id="mic-encode-wave" disabled="disabled">encode to wave</button>
-        <button id="mic-play-buffer" disabled="disabled">play shared buffer</button>
-        <button id="mic-download-wave" disabled="disabled">download as wave file</button>
+        <button id="mic-encode-wave" disabled="disabled">encode to wave (js)</button>
+        <button id="mic-play-buffer" disabled="disabled">play shared buffer (js)</button>
+        <button id="mic-download-wave" disabled="disabled">download as wave file (as)</button>
+        <button id="mic-upload-wave" disabled="disabled">upload to ./test as wave file (as)</button>
+    </div>
+    <span class="label">Info:</span>
+    <div id="view-info">
         <span class="label">muted:</span><span id="mic-muted" class="status muted"></span>
         <span class="label">volumn:</span><span id="mic-volumn" class="status volumn"></span>
+        <span class="label">recorded duration:</span><span id="mic-duration" class="status duration"></span>
     </div>
     <span class="label">Shared Buffer Hex View:</span>
     <div id="view-hex"></div>
@@ -141,12 +146,14 @@
                         var curGUID;
                         var elMuted = document.getElementById('mic-muted');
                         var elVolumn = document.getElementById('mic-volumn');
+                        var elDuration = document.getElementById('mic-duration');
                         var btnStart = document.getElementById('mic-start');
                         var btnStop = document.getElementById('mic-stop');
                         var btnDownloadRaw = document.getElementById('mic-download-raw');
                         var btnEncodeWave = document.getElementById('mic-encode-wave');
                         var btnDownloadWave = document.getElementById('mic-download-wave');
                         var btnPlayBuffer = document.getElementById('mic-play-buffer');
+                        var btnUploadWave = document.getElementById('mic-upload-wave');
                         var elViewHex = document.getElementById('view-hex');                        
                         var sharedArrayBuffer;
                         var sharedDownloadObject;
@@ -221,6 +228,8 @@
                             btnDownloadRaw.removeAttribute('disabled');
                             btnDownloadWave.removeAttribute('disabled');
 
+                            elDuration.innerText = pc.recorder.result.duration();
+
                         };
 
                         btnStart.onclick = function() {
@@ -270,9 +279,13 @@
 
                             };
 
-                            pc.recorder.result.ondownloadfailed = function(msg)
+                            pc.recorder.result.ondownloadfailed = function(obj)
                             {
-                                console.log('downloading failed: ' + msg);
+                                if ( downloadGuid != obj.guid ){
+                                    return;
+                                }
+
+                                console.log('downloading failed: ' + obj.message);
                             };
 
                             // try to download data
@@ -358,10 +371,15 @@
                                 sharedDownloadObject = obj;
 
                                 btnPlayBuffer.removeAttribute('disabled');
+                                btnUploadWave.removeAttribute('disabled');
                             };
-                            pc.recorder.result.ondownloadfailed = function(msg)
+                            pc.recorder.result.ondownloadfailed = function(obj)
                             {
-                                console.log('downloading failed: ' + msg);
+                                if ( downloadGuid != obj.guid ){
+                                    return;
+                                }
+
+                                console.log('downloading failed: ' + obj.message);
                             };
 
 
@@ -404,9 +422,30 @@
                             source.start(0);
                             console.log('started')
                         };
+
+                        btnUploadWave.onclick = function(){
+                            var uploadGuid;
+                            debugger;
+                            uploadGuid = pc.recorder.result.upload('wave', './test');
+                            pc.recorder.result.onuploaded = function(obj)
+                            {
+                                if (uploadGuid != obj.guid){
+                                    return;
+                                }
+                                alert('uploaded');
+                            };
+                            pc.recorder.result.onuploadfailed = function(obj)
+                            {
+                                if (uploadGuid != obj.guid){
+                                    return;
+                                }
+                                alert(obj.message);
+                            };
+                            console.log('upload guid:', uploadGuid);
+                        };
                         
                         // update the recorder volumn
-                        (function looper(){
+                        ;(function looper(){
                             elVolumn.innerText = pc.recorder.activity();
                             setTimeout( looper, 30 );
                         })();

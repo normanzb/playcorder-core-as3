@@ -2,6 +2,12 @@ package data.containers
 {
     import flash.utils.ByteArray;
     import flash.media.Microphone;
+    import flash.net.URLLoader;
+    import flash.net.URLLoaderDataFormat;
+    import flash.net.URLRequest;
+    import flash.net.URLRequestMethod;
+    import flash.events.Event;
+    import flash.events.IOErrorEvent;
 
     import tickets.GUIDTicket;
     import tickets.Ticket;
@@ -16,6 +22,13 @@ package data.containers
         extends Container
     {
         private var _mic:Microphone;
+        private static var sampleRates:Object = {
+            44: 44100,
+            22: 22050,
+            11: 11025,
+            8: 8000,
+            5: 5512
+        };
 
         function RAWAudioContainer(mic:Microphone)
         {
@@ -76,13 +89,6 @@ package data.containers
                     else if ( type == "wave" )
                     {
                         var we:WaveEncoder = new WaveEncoder();
-                        var sampleRates:Object = {
-                            44: 44100,
-                            22: 22050,
-                            11: 11025,
-                            8: 8000,
-                            5: 5512
-                        };
                         var waveByteArray:ByteArray = we.encode( ba, 
                         {
                             rate: sampleRates[ _mic.rate ],
@@ -124,6 +130,65 @@ package data.containers
 
 
             return ticket;
+        }
+
+        public override function upload(type:String, url:String):Ticket
+        {
+            var me:Container = this;
+            var dfd:Deferred = new Deferred();
+            var ticket:GUIDTicket = new GUIDTicket(dfd.promise);
+
+            var tcktDownload:Ticket = download( type );
+
+            tcktDownload
+                .promise
+                .then(
+                    function(obj:Object):void
+                    {
+                        // try uploading
+                        var request:URLRequest = new URLRequest(url);
+                        var loader:URLLoader = new URLLoader();
+
+                        request.method = URLRequestMethod.POST;
+                        request.data = obj.data;
+
+                        loader.addEventListener(
+                            Event.COMPLETE, 
+                            function(evt:Event):void
+                            {
+                                dfd.resolve( null );
+                            });
+
+                        
+                        loader.addEventListener(IOErrorEvent.IO_ERROR, 
+                            function(evt:IOErrorEvent):void
+                            {
+                                dfd.reject('fail to upload, ex: ' + evt.toString())
+                            });
+
+                        loader.load(request);
+                    },
+                    dfd.reject
+                );
+            
+            return ticket;   
+        }
+
+        /*
+         * Return the length of the audio (in seconds)
+         */
+        public function get duration():int
+        {
+            var ret:int = 0;
+
+            if ( data is ByteArray )
+            {
+                var ba:ByteArray = ByteArray(data);
+
+                ret = ba.length / ( sampleRates[ _mic.rate ] * 2 );
+            }
+
+            return ret;
         }
     }
 }

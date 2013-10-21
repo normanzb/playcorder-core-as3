@@ -11,6 +11,7 @@ package interoperators
     import events.PlayerEvent;
     import tickets.Ticket;
     import tickets.GUIDTicket;
+    import data.containers.RAWAudioContainer;
 
     import com.demonsters.debugger.MonsterDebugger;
     import com.codecatalyst.promise.Deferred;
@@ -40,6 +41,8 @@ package interoperators
             RECORDER_RESULT_ONDOWNLOADFAILED        : 'recorder_result_ondownloadfailed',
             RECORDER_RESULT_UPLOAD                  : 'recorder_result_upload',
             RECORDER_RESULT_ONUPLOADED              : 'recorder_result_onuploaded',
+            RECORDER_RESULT_ONUPLOADFAILED          : 'recorder_result_onuploadfailed',
+            RECORDER_RESULT_DURATION                : 'recorder_result_duration',
             PLAYER_ONSTARTED                        : 'player_onstarted',
             PLAYER_ONSTOPPED                        : 'player_onstopped',
             PLAYER_START                            : 'player_start',
@@ -311,7 +314,7 @@ package interoperators
                                         callSelf(
                                             MEMBER_NAME.RECORDER_RESULT_ONDOWNLOADED,
                                             {
-                                                guid: obj.guid.toString(),
+                                                guid: ret,
                                                 data: obj.data,
                                                 length: obj.length,
                                                 channels: obj.channels,
@@ -326,7 +329,10 @@ package interoperators
                                     {
                                         callSelf(
                                             MEMBER_NAME.RECORDER_RESULT_ONDOWNLOADFAILED,
-                                            msg
+                                            {
+                                                guid: ret,
+                                                message: msg != null? msg: "unknown error"
+                                            }
                                         );
                                     })
                                 }
@@ -339,7 +345,7 @@ package interoperators
                 return ret;
             });
 
-            ExternalInterface.addCallback(MEMBER_NAME.RECORDER_RESULT_UPLOAD, function(url:String):String
+            ExternalInterface.addCallback(MEMBER_NAME.RECORDER_RESULT_UPLOAD, function(type:String, url:String):String
             {
                 var ret:String = '';
                 var ticket:Ticket;
@@ -348,15 +354,57 @@ package interoperators
 
                 if ( playcorder.recorder && playcorder.recorder.result )
                 {
-                    ticket = playcorder.recorder.result.upload(null, url);
+                    ticket = playcorder.recorder.result.upload(type, url);
 
                     if ( ticket is GUIDTicket )
                     {
                         ret = GUIDTicket(ticket).guid.toString();
                     }
+
+                    ticket
+                        .promise
+                        .then(
+                            function():void
+                            {
+                                nextTick(function():void
+                                {
+                                    callSelf(
+                                        MEMBER_NAME.RECORDER_RESULT_ONUPLOADED,
+                                        {
+                                            guid: ret,
+                                            api: url
+                                        }
+                                    );
+                                });
+                            },
+                            function(msg:String):void
+                            {
+                                nextTick(function():void
+                                {
+                                    callSelf(
+                                        MEMBER_NAME.RECORDER_RESULT_ONUPLOADFAILED,
+                                        {
+                                            guid: ret,
+                                            message: msg != null ? msg : "unknown error"
+                                        }
+                                    );
+                                });
+                            });
                 }
 
                 return ret;
+            });
+
+            ExternalInterface.addCallback(MEMBER_NAME.RECORDER_RESULT_DURATION, function():int
+            {
+                MonsterDebugger.trace(this, 'external calls to recorder.result.duration()');
+
+                if ( playcorder.recorder && playcorder.recorder.result && playcorder.recorder.result is RAWAudioContainer )
+                {
+                    return RAWAudioContainer(playcorder.recorder.result).duration;
+                }
+
+                return 0;
             });
 
             ExternalInterface.addCallback(MEMBER_NAME.PLAYER_INITIALIZE, function(config:Object):Boolean
