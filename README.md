@@ -81,6 +81,10 @@ To see logs from Playcorder, install MonsterDebugger <http://www.monsterdebugger
 4. recorder.muted() - return true indicates that the microphone is muted
 5. recorder.connect() - do the pre-connection (if appilcable), currently only works on ef rtmpt protocol (if you are on rtmp, server will disconnect it when it is idle more than 3 sec).
 6. recorder.disconnect() - disconnect (if applicable)
+7. recorder.result.type() - get type of result
+8. recorder.result.duration - get duration of the result
+9. recorder.result.download(type) - download result as specified type, could be 'raw' or 'wave'
+10. recorder.result.upload(type, url) - upload result to remote url
 
 ####Events
 
