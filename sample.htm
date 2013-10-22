@@ -15,30 +15,57 @@
             width: 100%;
             font-family: Courier;
         }
+        .caption
+        {
+            display: inline-block;
+            background-color: #000;
+            color: #FFF;
+            margin: 10px 0;
+        }
         .label
         {
-            background-color: gray;
+            background-color: #EFEFEF;
+        }
+        .status
+        {
+            width: 60px;
+            padding: 0 10px;
+            display: inline-block;
         }
     </style>
 </head>
 <body>
     <div id="playcorder-container"></div>
     <div id="panel" class="panel">
-        <button id="mic-start">start</button>
-        <button id="mic-stop" disabled="disabled">stopped</button>
-        <button id="mic-download-raw" disabled="disabled">download as raw data</button>
-        <button id="mic-encode-wave" disabled="disabled">encode to wave (js)</button>
-        <button id="mic-play-buffer" disabled="disabled">play shared buffer (js)</button>
-        <button id="mic-download-wave" disabled="disabled">download as wave file (as)</button>
-        <button id="mic-upload-wave" disabled="disabled">upload to ./test as wave file (as)</button>
+        <table>
+            <tr>
+                <td>JavaScript</td>
+                <td rowspan="2"><button id="mic-start">start</button></td>
+                <td rowspan="2">-&gt;</td>
+                <td rowspan="2"><button id="mic-stop" disabled="disabled">stopped</button></td>
+                <td rowspan="2">-&gt;</td>
+                <td><button id="mic-download-raw" disabled="disabled">download as raw data (js)</button></td>
+                <td>-&gt;</td>
+                <td><button id="mic-encode-wave" disabled="disabled">encode to wave (js)</button></td>
+                <td rowspan="2">-&gt;</td>
+                <td  rowspan="2"><button id="mic-play-buffer" disabled="disabled">play shared buffer (js)</button></td>
+                <td rowspan="2">-&gt;</td>
+                <td>TODO: upload to ./test as wave file (js)</td>
+            </tr>
+            <tr>
+                <td>ActionScript</td>
+                <td colspan="3"><button id="mic-download-wave" disabled="disabled" style="width: 100%">download as wave file (as)</button></td>
+                <td><button id="mic-upload-wave" disabled="disabled">upload to ./test as wave file (as)</button></td>
+            </tr>
+        </table>
     </div>
-    <span class="label">Info:</span>
+    <span class="caption">Info:</span>
     <div id="view-info">
         <span class="label">muted:</span><span id="mic-muted" class="status muted"></span>
         <span class="label">volumn:</span><span id="mic-volumn" class="status volumn"></span>
         <span class="label">recorded duration:</span><span id="mic-duration" class="status duration"></span>
     </div>
-    <span class="label">Shared Buffer Hex View:</span>
+    <span class="caption">Shared Buffer Hex View:</span>
     <div id="view-hex"></div>
     <script type="text/javascript">
         function floatTo16BitPCM(output, offset, input){
@@ -425,7 +452,6 @@
 
                         btnUploadWave.onclick = function(){
                             var uploadGuid;
-                            debugger;
                             uploadGuid = pc.recorder.result.upload('wave', './test');
                             pc.recorder.result.onuploaded = function(obj)
                             {
