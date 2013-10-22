@@ -82,7 +82,7 @@ To see logs from Playcorder, install MonsterDebugger <http://www.monsterdebugger
 5. recorder.connect() - do the pre-connection (if appilcable), currently only works on ef rtmpt protocol (if you are on rtmp, server will disconnect it when it is idle more than 3 sec).
 6. recorder.disconnect() - disconnect (if applicable)
 7. recorder.result.type() - get type of result
-8. recorder.result.duration - get duration of the result
+8. recorder.result.duration() - get duration of the result
 9. recorder.result.download(type) - download result as specified type, could be 'raw' or 'wave'
 10. recorder.result.upload(type, url) - upload result to remote url
 
@@ -101,3 +101,12 @@ To see logs from Playcorder, install MonsterDebugger <http://www.monsterdebugger
     
 6. recorder.onerror - possible event code are:
     * connection.fail - fire when the connection failed.
+
+##TODO
+
+1. Encoding in worker
+2. Download or upload progress report
+3. Progressively upload (using multipart)
+4. Encode in mp3
+5. Encode in speex or opus
+6. Remove ASRRTMPRecorder.as make playcorder more generic
