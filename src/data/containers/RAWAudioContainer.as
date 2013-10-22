@@ -185,7 +185,8 @@ package data.containers
             {
                 var ba:ByteArray = ByteArray(data);
 
-                ret = ba.length / ( sampleRates[ _mic.rate ] * 2 );
+                // each sample is a 32bit float == 4 bytes
+                ret = ba.length / ( sampleRates[ _mic.rate ] * 4 );
             }
 
             return ret;
