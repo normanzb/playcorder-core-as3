@@ -1,0 +1,6 @@
+[submodule "ext-src/encoder-wave"]
+	path = ext-src/encoder-wave
+	url = https://github.com/normanzb/encoder-wave.git
+[submodule "ext-src/encoder-mp3"]
+	path = ext-src/encoder-mp3
+	url = https://github.com/kikko/Shine-MP3-Encoder-on-AS3-Alchemy.git
