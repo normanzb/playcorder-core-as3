@@ -4,7 +4,7 @@ package connectors
 
     public interface IConnectable
     {
-        function connect():Ticket
+        function connect(...args):Ticket
         function disconnect():Ticket
     }
 }

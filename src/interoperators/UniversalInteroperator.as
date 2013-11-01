@@ -224,7 +224,7 @@ package interoperators
                 return ret;
             });
 
-            ExternalInterface.addCallback(MEMBER_NAME.RECORDER_CONNECT, function():String
+            ExternalInterface.addCallback(MEMBER_NAME.RECORDER_CONNECT, function(...args):String
             {
                 var ret:String = '';
 
@@ -234,7 +234,7 @@ package interoperators
 
                     MonsterDebugger.trace(this, 'external calls to recorder.connect()');
 
-                    var ticket:Ticket = connectable.connect();
+                    var ticket:Ticket = connectable.connect(args);
 
                     if (ticket is GUIDTicket)
                     {

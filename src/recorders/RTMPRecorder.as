@@ -28,7 +28,21 @@ package recorders
     {
         private const defaultSetting:Object = 
         {
-            server: ''
+            server: '',
+            params: 
+            {
+                connection: 
+                [
+                    {
+                        type: 'macro',
+                        value: 'server'
+                    },
+                    {
+                        type: 'macro',
+                        value: 'guid'
+                    }
+                ]
+            }
         };
 
         private var _conn:NetConnection;
@@ -87,8 +101,33 @@ package recorders
 
             params = getConnectionParams();
 
-            // append must have params
-            params.unshift(server, _currentGUID.toString());
+            // update macro/placeholder to corresponding value
+            for( var l:int = params.length; l--; ) 
+            {
+                if ( typeof params[l] == 'object' )
+                {
+                    if ( params.type == 'macro' && typeof params.value == 'string' )
+                    {
+                        switch( params.value.toLowerCase() )
+                        {
+                            case 'server': 
+                                params[ l ] = server;
+                                break;
+                            case 'guid': 
+                                params[ l ] = _currentGUID.toString();
+                                break;
+                            default:
+                                params[ l ] = '';
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        // unknown param
+                        params[ l ] = '';
+                    }
+                }
+            }
 
             MonsterDebugger.trace(this, 'connection parameters:');
             MonsterDebugger.trace(this, params);
@@ -322,6 +361,25 @@ package recorders
         
         }
 
+        private function clone(target:Object, source:Object):void
+        {
+            for(var key:String in defaultSetting)
+            {
+                if (!(key in config))
+                {
+                    if ( typeof defaultSetting[key] == 'object' )
+                    {
+                        config[key] = {};
+                        clone(config[key], defaultSetting[key]);
+                    }
+                    else
+                    {
+                        config[key] = defaultSetting[key];
+                    }
+                }
+            }
+        }
+
         protected function getConnectionParams():Array
         {
             return [];
@@ -332,13 +390,7 @@ package recorders
             config = cfg;
             super(mic, cfg);
 
-            for(var key:String in defaultSetting)
-            {
-                if (!(key in config))
-                {
-                    config[key] = defaultSetting[key];
-                }
-            }
+            clone(config, defaultSetting);
 
             _stateMachine = new StateMachine
             ([
@@ -356,11 +408,26 @@ package recorders
             _stateMachine.addEventListener('disconnect', onStateDisconnect);
         }
 
-        public function connect():Ticket
+        public function connect(...args):Ticket
         {
             var ret:GUIDTicket;
             var prm:Promise;
-            var dfd:Deferred = new Deferred();            
+            var dfd:Deferred = new Deferred();
+
+            // clear previous setting
+            config['params']['connection'] = [];
+
+            if ( args.length > 0 )
+            {
+                for( var i:int = 0; i < args.length; i++ )
+                {
+                    config['params']['connection'].push(args[i]);
+                }
+            }
+            else
+            {
+                clone(config['params']['connection'], defaultSetting);
+            }
 
             ret = new GUIDTicket(dfd.promise);
 
