@@ -64,12 +64,8 @@ To see logs from Playcorder, install MonsterDebugger <http://www.monsterdebugger
         rate:44, 
         silence:0, 
         quality: 9,
-        type:'asrrtmp', // recorder type, can be 'local', 'rtmp', 'asrrtmp'
+        type:'local', // recorder type, can be 'local', 'rtmp'
         server: 'rtmpt://speechtest.englishtown.com:1935/asrstreaming', // server addr if rtmp recorder is choosen
-        ids: {
-            student:23653966, // student id
-            activity:321 // activity id
-        }
     }
     
 ####Methods
@@ -79,7 +75,7 @@ To see logs from Playcorder, install MonsterDebugger <http://www.monsterdebugger
 2. recorder.stop()
 3. recorder.activity() - return 0 - 100, indicates microphone volumn.
 4. recorder.muted() - return true indicates that the microphone is muted
-5. recorder.connect() - do the pre-connection (if appilcable), currently only works on ef rtmpt protocol (if you are on rtmp, server will disconnect it when it is idle more than 3 sec).
+5. recorder.connect(...args) - do the pre-connection (if appilcable), currently only works on ef rtmpt protocol (if you are on rtmp, server will disconnect it when it is idle more than 3 sec). args will be passed as it to corresponding internal connect method, for example, if it is rtmp recorder, args will be passed to NetConnection.connect();
 6. recorder.disconnect() - disconnect (if applicable)
 7. recorder.result.type() - get type of result
 8. recorder.result.duration() - get duration of the result
@@ -109,4 +105,3 @@ To see logs from Playcorder, install MonsterDebugger <http://www.monsterdebugger
 3. Progressively upload (using multipart)
 4. Encode in mp3
 5. Encode in speex or opus
-6. Remove ASRRTMPRecorder.as make playcorder more generic
