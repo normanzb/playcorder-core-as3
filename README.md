@@ -4,15 +4,12 @@ Audio Player and Recorder written in ActionScript3 with JavaScript interface.
 
 ##Pros
 
-1. Better and cleaner APIs.
-2. Provides API that allow you to do a pre-connection before actual recording.
-3. Make sure local buffer is properly emptied before actually closing the connection. (There was a bug in WaveRecorder that if you are in slow network you cannot send all audio content to the server when you close it.)
-4. Used Deferred and Promise internally
-5. Used StateMachine internally to build the robust recording functionalities.
-6. No global event handler needed, no global pollution.
-7. No more user privacy leak, permission will be asked again when any 3rd party malicious website try to reuse SWF.
-8. Internally used Monster Debugger for easier debugging.
-9. Multiple instance of playcorder is possible.
+1. Cleaner APIs, No global event handler needed, no global pollution.
+2. When doing realtime recording (RTMP), playcorder allows you to do a pre-connection before actual recording.
+3. SWF file can be hosted on CDN server.
+4. No privacy leaking when swf is hosted on CDN, microphone permission will be prompted again when page domain name changed. (This prevent any 3rd party to reuse the hosted SWF and hence gain the microphone access permission without actual user approval.)
+5. Multiple instance of playcorder is possible.
+6. Internally used Monster Debugger for easier debugging.
 
 ##Build
 
@@ -105,3 +102,4 @@ To see logs from Playcorder, install MonsterDebugger <http://www.monsterdebugger
 3. Progressively upload (using multipart)
 4. Encode in mp3
 5. Encode in speex or opus
+6. Javascript wrapper and Javascript couterpart
