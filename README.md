@@ -103,4 +103,4 @@ To see logs from Playcorder, install MonsterDebugger <http://www.monsterdebugger
 3. Progressively upload (using multipart)
 4. Encode in mp3
 5. Encode in speex or opus
-6. Javascript wrapper and Javascript couterpart
+6. Javascript wrapper and Javascript playing and recording counterpart
