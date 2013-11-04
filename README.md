@@ -14,6 +14,7 @@ Audio Player and Recorder written in ActionScript3 with JavaScript interface.
 ##Build
 
 * Install Nodejs
+* Install Flex SDK, make sure mxmlc can be found in your $PATH.
 * Install dependencies
 
         npm install
