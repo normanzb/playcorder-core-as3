@@ -1,4 +1,4 @@
-#Playcorder
+#Playcorder.Core.AS3
 
 Audio Player and Recorder written in ActionScript3 with JavaScript interface.
 
