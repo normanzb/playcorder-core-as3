@@ -9,10 +9,16 @@ module.exports = function(grunt) {
 
     grunt.config.init({
         shell: {
-            'clean': {
+            'clean dist': {
                 command: 'rm -rf ./dist/'
             },
-            'mkdir': {
+            'clean tmp': {
+                command: 'rm -rf ./tmp/'
+            },
+            'mkdir tmp': {
+                command: 'mkdir tmp',
+            },
+            'mkdir dist': {
                 command: 'mkdir dist',
             },
             'config': {
@@ -35,19 +41,38 @@ module.exports = function(grunt) {
 
                         }
 
-                        var cmd = grunt.config('shell.as3.command')
+                        // update path
+                        var cmdWaveWorker = grunt.config('shell.worker-wave.command')
                             .replace(/_placeholder_/g, pathOfCompiler);
 
-                        console.log('command to exec: ', cmd);
+                        console.log('wave worker compiling command to exec: ', cmdWaveWorker);
 
-                        grunt.config('shell.as3.command', cmd);
+                        grunt.config('shell.worker-wave.command', cmdWaveWorker);
+
+                        var cmdCore = grunt.config('shell.core.command')
+                            .replace(/_placeholder_/g, pathOfCompiler);
+
+                        console.log('core compiling command to exec: ', cmdCore);
+
+                        grunt.config('shell.core.command', cmdCore);
 
                         done();
                     }
                 }
             },
-            'as3': {
-                command: '_placeholder_ Playcorder.as -library-path+=../lib/ -output ../dist/Playcorder.swf',
+            'worker-wave': {
+                command: '_placeholder_ workers/encoders/Wave.as -library-path+=../lib/ -output ../tmp/Worker.Encoder.Wave.swf -source-path+=./ -source-path+=../ext-src/encoder-wave/src/ -target-player=11.9',
+                options: {
+                    stdout: true,
+                    stderr: true,
+                    failOnError: true,
+                    execOptions: {
+                        cwd: 'src'
+                    }
+                }
+            },
+            'core': {
+                command: '_placeholder_ Playcorder.as -library-path+=../lib/ -library-path+=../tmp/ -source-path+=./ -source-path+=../tmp/ -source-path+=../ext-src/encoder-wave/src/ -output ../dist/Playcorder.swf -target-player=11.9',
                 options: {
                     stdout: true,
                     stderr: true,

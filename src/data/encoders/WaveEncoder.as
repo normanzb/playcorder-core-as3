@@ -1,142 +1,120 @@
 package data.encoders
 {
     import flash.utils.ByteArray;
-    import flash.utils.Endian;
+    import flash.system.MessageChannel;
+    import flash.system.Worker;
+    import flash.system.WorkerDomain;
+    import flash.system.WorkerState;
+    import flash.net.registerClassAlias;
+    import flash.events.Event;
+
+    import events.EncoderEvent;
+    import workers.messages.Message;
+    import workers.encoders.Wave;
 
     import com.demonsters.debugger.MonsterDebugger;
+    import com.codecatalyst.promise.Deferred;
+    import com.codecatalyst.promise.Promise;
+    import com.codecatalyst.util.*;
 
     public class WaveEncoder
         extends Encoder
     {
-        private const ID_CHUNK:String = 'RIFF';
-        private const ID_CHUNK_SUB_FORMAT:String = 'fmt ';
-        private const ID_CHUNK_SUB_DATA:String = 'data';
-        private const TYPE_RIFF_WAVE:String = 'WAVE';
-        private const BIT_LEN:int = 16;
-        private const BYTE_PER_SAMPLE:Number = BIT_LEN / 8;
-        private const RATES:Array = [ 
-            5512,
-            // walkie-talkie
-            8000, 
-            // lower quality PCM, 1/4 CD
-            11025,
-            // wideband, telephone, voip
-            16000,
-            // half sampling rate of audio CD
-            22050,
-            // miniDV camcorder
-            32000,
-            // NTSC
-            44056,
-            // main stream, audio CD, MPEG-1, VCD, SVCD, MP3
-            44100,
-            // NIPPON COLUMBIA
-            47250,
-            // professional digital video equipment
-            48000,
-            // DVD-audio
-            96000
-        ];
+        // ------- Embed the background worker swf as a ByteArray -------
+        [Embed(source="/Worker.Encoder.Wave.swf", mimeType="application/octet-stream")]
+        private static var bytClsWorker:Class;
 
-        private function floatTo16BitPC( ba:ByteArray, samples:Vector.<Number> ):void
-        {
-            for( var i:int = 0; i < samples.length; i++ )
-            {
-                var s:Number = Math.max( -1, Math.min( 1, samples[i] ) );
-                ba.writeShort( s < 0 ? s * 0x8000 : s * 0x7FFF );
-            }
-        }
+        private var workerBackground:Worker;
+        private var prmEncoding:Promise;
 
         function WaveEncoder()
         {
-
+            registerClassAlias("workers.messages.Message", Message);
         }
 
-        public override function encode(ba:ByteArray, config:Object ):ByteArray
+        public override function encode( ba:ByteArray, config:Object ):Promise
         {
-            var ret:ByteArray;
-            var samples:Vector.<Number>;
-            var cur:int = 0;
+            var dfd:Deferred;
+            var me:WaveEncoder = this;
+            var args:Object = arguments;
+            var inputChn:MessageChannel;
+            var outputChn:MessageChannel;
 
-            var rate:Number = config['rate'];
-            var numberOfChannels:Number = config['numberOfChannels'];
+            var funcCleanUp:Function = function(obj:*):*
+                {
+                    // clean up
+                    workerBackground = null;
+                    prmEncoding = null;
 
-            if ( ba == null )
+                    return obj;
+                };
+
+            var funcRecursion:Function = function():Promise
+                {
+                    return encode.apply(me, args);
+                };
+
+            if ( workerBackground != null && prmEncoding != null )
             {
-                throw "byte array required";
+                return prmEncoding
+                    .then(funcRecursion, funcRecursion);
             }
 
-            if ( RATES.indexOf( rate ) < 0 )
+            dfd = new Deferred();
+
+            prmEncoding = dfd.promise.then(funcCleanUp, funcCleanUp);
+
+            workerBackground = WorkerDomain.current.createWorker(new bytClsWorker);
+
+            inputChn = Worker.current.createMessageChannel(workerBackground);
+            workerBackground.setSharedProperty(Wave.CHANNEL_IN, inputChn);
+
+            outputChn = workerBackground.createMessageChannel(Worker.current);
+            workerBackground.setSharedProperty(Wave.CHANNEL_OUT, outputChn);
+
+            outputChn.addEventListener(Event.CHANNEL_MESSAGE, 
+                function handleOutputMessage(evt:Event):void
+                {
+                    if ( !outputChn.messageAvailable )
+                    {
+                        return;
+                    }
+
+                    var msg:Message = outputChn.receive() as Message;
+                    
+                    if ( msg.type == 'result' )
+                    {
+                        MonsterDebugger.trace( me, 'encoding is done' );
+
+                        var result:ByteArray = msg.value as ByteArray;
+
+                        if ( result == null )
+                        {
+                            dfd.reject( 'unknown reason' );
+                        }
+
+                        dfd.resolve( result );
+                    }
+                });
+
+            // Start the worker
+            workerBackground.addEventListener(Event.WORKER_STATE, function handleWorkerStateChange(evt:Event):void
             {
-                throw "Sample rate is not expected";
-            }
+                if ( workerBackground.state == WorkerState.RUNNING )
+                {
+                    var msgEncode:Message = new Message();
+                    msgEncode.type = 'encode';
+                    msgEncode.value = [ ba, config ];
 
-            if ( numberOfChannels < 1 )
-            {
-                throw "Incorrect number of channels";
-            }
+                    MonsterDebugger.trace( me, 'start encoding' );
+                    inputChn.send(msgEncode)
+                }
+            });
 
-            // get the samples out of byte array
-            samples = new Vector.<Number>;
+            MonsterDebugger.trace( me, 'kick off worker' );
+            workerBackground.start();
 
-            //ba.endian = Endian.LITTLE_ENDIAN;
-            ba.position = 0;
-            while( ba.bytesAvailable > 0 )
-            {
-                samples.push( ba.readFloat() );
-            }
-            MonsterDebugger.trace( this, 'samples are extracted' );
-
-            // build wave file
-            // https://ccrma.stanford.edu/courses/422/projects/WaveFormat/
-            ret = new ByteArray()
-
-            ret.endian = Endian.LITTLE_ENDIAN;
-
-            // RIFF ID
-            ret.writeUTFBytes( ID_CHUNK );
-
-            // file length
-            ret.writeUnsignedInt( 36 + samples.length * BYTE_PER_SAMPLE );
-
-            // RIFF type
-            ret.writeUTFBytes( TYPE_RIFF_WAVE );
-
-            // format chunk: ID
-            ret.writeUTFBytes( ID_CHUNK_SUB_FORMAT );
-
-            // format chunk: length
-            ret.writeUnsignedInt( 16 );
-
-            // sample format: raw
-            ret.writeShort( 1 );
-
-            // number of channels
-            ret.writeShort( numberOfChannels );
-
-            // sample rate
-            ret.writeUnsignedInt( rate );
-
-            // byte rate ( sample rate * block align )
-            ret.writeUnsignedInt( rate * BYTE_PER_SAMPLE * numberOfChannels );
-
-            // block align ( channel count * bytes per sample )
-            ret.writeShort( numberOfChannels * BYTE_PER_SAMPLE );
-
-            // bits per sample
-            ret.writeShort( BIT_LEN );
-
-            // data chunk: ID
-            ret.writeUTFBytes( ID_CHUNK_SUB_DATA );
-
-            // data chunk: length
-            ret.writeUnsignedInt( samples.length * BYTE_PER_SAMPLE );
-
-            floatTo16BitPC( ret, samples );
-
-            MonsterDebugger.trace( this, 'wave encoded' );
-
-            return ret;
+            return prmEncoding;
         }
     }
 }

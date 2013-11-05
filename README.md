@@ -10,6 +10,17 @@ Audio Player and Recorder written in ActionScript3 with JavaScript interface.
 4. No privacy leaking when swf is hosted on CDN, microphone permission will be prompted again when page domain name changed. (This prevent any 3rd party to reuse the hosted SWF and hence gaining the microphone access permission WITHOUT actual user approval.)
 5. Multiple instance of playcorder is possible.
 6. Internally used Monster Debugger for easier debugging.
+7. Non-blocking encoding.
+
+##Versions
+
+###Player Version
+
+11.4
+
+###mxmlc Version
+
+4.10.0
 
 ##Build
 

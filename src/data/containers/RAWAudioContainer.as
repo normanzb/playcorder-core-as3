@@ -8,10 +8,14 @@ package data.containers
     import flash.net.URLRequestMethod;
     import flash.events.Event;
     import flash.events.IOErrorEvent;
+    import flash.system.Worker;
 
     import tickets.GUIDTicket;
     import tickets.Ticket;
     import data.encoders.WaveEncoder;
+    import im.norm.data.encoders.WaveEncoder;
+    import events.EncoderEvent;
+    import workers.messages.Message;
 
     import com.codecatalyst.promise.Deferred;
     import com.codecatalyst.promise.Promise;
@@ -53,7 +57,7 @@ package data.containers
 
             nextTick(function():void
             {
-                var result:*;
+                var dfdEncoding:Deferred = new Deferred();
 
                 if ( data is ByteArray )
                 {
@@ -72,62 +76,108 @@ package data.containers
                             {
                                 outputArray.push( ba.readUnsignedByte() );
                             }
-
-                            result = outputArray;
                             
                             MonsterDebugger.trace( me, 'got result' );
+
+                            dfdEncoding.resolve(outputArray);
                         }
                         catch ( ex:Error )
                         {
                             MonsterDebugger.trace( me, 'fail to get result: ' + ex.toString() );
 
-                            dfd.reject( ex.toString() );
+                            dfdEncoding.reject( ex.toString() );
 
                             return;
                         }
                     }
                     else if ( type == "wave" )
                     {
-                        var we:WaveEncoder = new WaveEncoder();
-                        var waveByteArray:ByteArray = we.encode( ba, 
+                        if ( Worker.isSupported )
                         {
-                            rate: sampleRates[ _mic.rate ],
-                            numberOfChannels: 1
-                        } );
+                            MonsterDebugger.trace( me, 'worker is supported' );
 
-                        waveByteArray.position = 0;
+                            var weAsync:data.encoders.WaveEncoder = new data.encoders.WaveEncoder();
 
-                        while( waveByteArray.bytesAvailable > 0 )
-                        {
-                            outputArray.push( waveByteArray.readUnsignedByte() );
+                            weAsync
+                                .encode( ba, {
+                                    rate: sampleRates[ _mic.rate ],
+                                    numberOfChannels: 1
+                                })
+                                .then(
+                                    function(result:*):void
+                                    {
+                                        MonsterDebugger.trace( me, 'async wave encoding finished' );
+
+                                        if ( !(result is ByteArray) )
+                                        {
+                                            dfdEncoding.reject('result is not ByteArray');
+                                            return;
+                                        }
+
+                                        var waveByteArray:ByteArray = result as ByteArray;
+
+                                        waveByteArray.position = 0;
+
+                                        while( waveByteArray.bytesAvailable > 0 )
+                                        {
+                                            outputArray.push( waveByteArray.readUnsignedByte() );
+                                        }
+
+                                        dfdEncoding.resolve( outputArray );
+                                    });
                         }
+                        else
+                        {
+                            MonsterDebugger.trace( me, 'worker is not supported' );
 
-                        result = outputArray;
+                            var we:im.norm.data.encoders.WaveEncoder = new im.norm.data.encoders.WaveEncoder();
+                            var waveByteArray:ByteArray = we.encode( ba, 
+                            {
+                                rate: sampleRates[ _mic.rate ],
+                                numberOfChannels: 1
+                            } );
+    
+                            waveByteArray.position = 0;
+    
+                            while( waveByteArray.bytesAvailable > 0 )
+                            {
+                                outputArray.push( waveByteArray.readUnsignedByte() );
+                            }
+     
+                            dfdEncoding.resolve( outputArray );
+                        }
+                            
                     }
                     else
                     {
-                        dfd.reject("download type is not supported");
+                        dfdEncoding.reject("download type is not supported");
                         return;
                     }
 
-                    dfd.resolve( 
-                    {
-                        guid: ticket.guid,
-                        data: result,
-                        length: ba.length,
-                        rate: _mic.rate,
-                        // always 1 input source from flash:
-                        // http://stackoverflow.com/questions/9380499/recording-audio-works-playback-way-too-fast
-                        channels: [true]
-                    });
-
+                    dfdEncoding
+                        .promise
+                        .then(
+                            function(result:*):void
+                            {
+                                dfd.resolve( 
+                                {
+                                    guid: ticket.guid,
+                                    data: result,
+                                    length: ba.length,
+                                    rate: _mic.rate,
+                                    // always 1 input source from flash:
+                                    // http://stackoverflow.com/questions/9380499/recording-audio-works-playback-way-too-fast
+                                    channels: [true]
+                                });
+                            }, 
+                            dfd.reject
+                        );
                 }
                 else 
                 {
                     dfd.reject("data format is not supported");
                 }
             });
-
 
             return ticket;
         }
