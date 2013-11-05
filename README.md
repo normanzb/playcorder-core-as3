@@ -22,6 +22,10 @@ Audio Player and Recorder written in ActionScript3 with JavaScript interface.
 
 4.10.0
 
+##Download
+
+[https://github.com/normanzb/playcorder-core-as3/blob/master/dist/Playcorder.swf?raw=true]
+
 ##Build
 
 * Install Nodejs
