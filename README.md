@@ -11,6 +11,7 @@ Audio Player and Recorder written in ActionScript3 with JavaScript interface.
 5. Multiple instance of playcorder is possible.
 6. Internally used Monster Debugger for easier debugging.
 7. Non-blocking encoding.
+8. Extracting raw, wave and mp3 data.
 
 ##Versions
 
@@ -92,7 +93,7 @@ To see logs from Playcorder, install MonsterDebugger <http://www.monsterdebugger
 6. recorder.disconnect() - disconnect (if applicable)
 7. recorder.result.type() - get type of result
 8. recorder.result.duration() - get duration of the result
-9. recorder.result.download(type) - download result as specified type, could be 'raw' or 'wave'
+9. recorder.result.download(type) - download result as specified type, could be 'raw' or 'wave' or 'mp3'
 10. recorder.result.upload(type, url) - upload result to remote url (using POST)
 
 ####Events
