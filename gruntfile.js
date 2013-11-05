@@ -6,6 +6,8 @@ module.exports = function(grunt) {
     var exec = require('child_process').exec;
 
     grunt.loadNpmTasks('grunt-shell');
+    grunt.loadNpmTasks("grunt-bumpup");
+    grunt.loadNpmTasks("grunt-tagrelease");
 
     grunt.config.init({
         shell: {
@@ -82,11 +84,28 @@ module.exports = function(grunt) {
                     }
                 }
             }
+        },
+        tagrelease: {
+            file: 'package.json',
+            commit:  true,
+            message: 'Release %version%',
+            prefix:  '',
+            annotate: false
+        },
+        bumpup: {
+            files: ['package.json']
         }
-
     });
 
     grunt.registerTask("default", "shell".split(' '));
+    grunt.registerTask("release", function (type) {
 
-    
+        grunt.task.run('shell');
+            
+        if (type != null && type != false){
+                grunt.task.run('bumpup:' + type);
+                grunt.task.run('tagrelease');
+        }
+
+    });
 };

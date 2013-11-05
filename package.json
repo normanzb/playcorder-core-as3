@@ -1,9 +1,10 @@
 {
     "name": "Playcorder",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "dependencies": {
-        // "flex-sdk": "~4.9.1",
         "grunt": "~0.4.1",
-        "grunt-shell": "~0.2.0"
+        "grunt-shell": "~0.2.0",
+        "grunt-bumpup": "~0.2.0",
+        "grunt-tagrelease": "~0.2.0"
     }
 }
