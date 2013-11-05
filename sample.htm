@@ -54,7 +54,10 @@
             </tr>
             <tr>
                 <td>ActionScript</td>
-                <td colspan="3"><button id="mic-download-wave" disabled="disabled" style="width: 100%">download as wave file (as)</button></td>
+                <td colspan="3">
+                    <button id="mic-download-wave" disabled="disabled" style="width: 100%">download as wave file (as)</button><br />
+                    <button id="mic-download-mp3" disabled="disabled" style="width: 100%">download as mp3 file (as)</button>
+                </td>
                 <td><button id="mic-upload-wave" disabled="disabled">upload to ./test as wave file (as)</button></td>
             </tr>
         </table>
@@ -179,6 +182,7 @@
                         var btnDownloadRaw = document.getElementById('mic-download-raw');
                         var btnEncodeWave = document.getElementById('mic-encode-wave');
                         var btnDownloadWave = document.getElementById('mic-download-wave');
+                        var btnDownloadMP3 = document.getElementById('mic-download-mp3');
                         var btnPlayBuffer = document.getElementById('mic-play-buffer');
                         var btnUploadWave = document.getElementById('mic-upload-wave');
                         var elViewHex = document.getElementById('view-hex');                        
@@ -263,6 +267,7 @@
 
                             btnDownloadRaw.removeAttribute('disabled');
                             btnDownloadWave.removeAttribute('disabled');
+                            btnDownloadMP3.removeAttribute('disabled');
 
                             elDuration.innerText = pc.recorder.result.duration();
 
@@ -371,6 +376,55 @@
                             }).join(' ');
 
                             btnPlayBuffer.removeAttribute('disabled');
+                        };
+
+                        btnDownloadMP3.onclick = function() {
+                            var downloadGuid;
+                            pc.recorder.result.ondownloaded = function(obj){
+                                if ( downloadGuid != obj.guid ){
+                                    return;
+                                }
+
+                                console.log('mp3 length: ' + obj.length);
+
+                                elViewHex.innerText = obj.data.map(function(el){
+                                    var ret = el.toString(16);
+                                    if (ret.length == 1) {
+                                        ret = "0"+ret;
+                                    }
+                                    return ret;
+                                }).join(' ');
+
+                                // try to convert it to arraybuffer
+                                if ( !ArrayBuffer ){
+                                    return;
+                                }
+
+                                var ab = new ArrayBuffer( obj.data.length );
+                                var ui8a = new Uint8Array(ab);
+
+                                for( var i = 0; i < obj.data.length; i++ )
+                                {
+                                    ui8a[ i ] = obj.data[i];
+                                }
+
+                                sharedArrayBuffer = ab;
+                                sharedDownloadObject = obj;
+
+                                btnPlayBuffer.removeAttribute('disabled');
+                                btnUploadWave.removeAttribute('disabled');
+                            };
+                            pc.recorder.result.ondownloadfailed = function(obj)
+                            {
+                                if ( downloadGuid != obj.guid ){
+                                    return;
+                                }
+
+                                console.log('downloading failed: ' + obj.message);
+                            };
+
+                            // try to download data
+                            downloadGuid = pc.recorder.result.download( 'mp3' );
                         };
 
                         btnDownloadWave.onclick = function() {

@@ -14,6 +14,7 @@ package data.containers
     import tickets.Ticket;
     import data.encoders.WaveEncoder;
     import im.norm.data.encoders.WaveEncoder;
+    import fr.kikko.lab.ShineMP3Encoder;
     import events.EncoderEvent;
     import workers.messages.Message;
 
@@ -34,13 +35,7 @@ package data.containers
             5: 5512
         };
 
-        function RAWAudioContainer(mic:Microphone)
-        {
-            _type = 'raw-audio';
-            _mic = mic;
-        }
-
-        public override function download(type:String):Ticket
+        private function extract(type:String, returnByteArray:Boolean):Ticket
         {
             var me:Container = this;
             var dfd:Deferred = new Deferred();
@@ -64,31 +59,10 @@ package data.containers
                     MonsterDebugger.trace( me, 'data is byte array');
 
                     var ba:ByteArray = ByteArray(data);
-                    var outputArray:Array = new Array();
 
                     if ( type == "raw" )
                     {
-                        try
-                        {
-                            ba.position = 0;
-
-                            while( ba.bytesAvailable > 0 )
-                            {
-                                outputArray.push( ba.readUnsignedByte() );
-                            }
-                            
-                            MonsterDebugger.trace( me, 'got result' );
-
-                            dfdEncoding.resolve(outputArray);
-                        }
-                        catch ( ex:Error )
-                        {
-                            MonsterDebugger.trace( me, 'fail to get result: ' + ex.toString() );
-
-                            dfdEncoding.reject( ex.toString() );
-
-                            return;
-                        }
+                        dfdEncoding.resolve( ba );
                     }
                     else if ( type == "wave" )
                     {
@@ -114,16 +88,7 @@ package data.containers
                                             return;
                                         }
 
-                                        var waveByteArray:ByteArray = result as ByteArray;
-
-                                        waveByteArray.position = 0;
-
-                                        while( waveByteArray.bytesAvailable > 0 )
-                                        {
-                                            outputArray.push( waveByteArray.readUnsignedByte() );
-                                        }
-
-                                        dfdEncoding.resolve( outputArray );
+                                        dfdEncoding.resolve( result );
                                     });
                         }
                         else
@@ -136,17 +101,36 @@ package data.containers
                                 rate: sampleRates[ _mic.rate ],
                                 numberOfChannels: 1
                             } );
-    
-                            waveByteArray.position = 0;
-    
-                            while( waveByteArray.bytesAvailable > 0 )
-                            {
-                                outputArray.push( waveByteArray.readUnsignedByte() );
-                            }
-     
-                            dfdEncoding.resolve( outputArray );
+
+                            dfdEncoding.resolve( waveByteArray );
+
                         }
                             
+                    }
+                    else if ( type == "mp3" )
+                    {
+                        // first convert the data to wave
+                        extract("wave", true)
+                            .promise
+                            .then(function(result:*):void
+                            {
+                                if ( result == null || result.data == null || !(result['data'] is ByteArray) )
+                                {
+                                    MonsterDebugger.trace( me, 'cannot extract wave ByteArray' );
+                                    dfdEncoding.reject('cannot extract wave ByteArray');
+                                }
+
+                                MonsterDebugger.trace( me, 'converting wave to mp3' );
+
+                                var sEncoder:ShineMP3Encoder = new ShineMP3Encoder( result['data'] as ByteArray );
+                                sEncoder.addEventListener(Event.COMPLETE, function(evt:Event):void
+                                {
+                                    MonsterDebugger.trace( me, 'converting is done' );
+                                    dfdEncoding.resolve( sEncoder.mp3Data );
+                                });
+                                sEncoder.start();
+
+                            });
                     }
                     else
                     {
@@ -157,8 +141,43 @@ package data.containers
                     dfdEncoding
                         .promise
                         .then(
-                            function(result:*):void
+                            function(ba:ByteArray):void
                             {
+                                var outputArray:Array;
+                                var result:*;
+
+                                if ( returnByteArray )
+                                {
+                                    result = ba;
+                                }
+                                else
+                                {
+                                    outputArray = new Array();
+
+                                    try
+                                    {
+                                        ba.position = 0;
+
+                                        while( ba.bytesAvailable > 0 )
+                                        {
+                                            outputArray.push( ba.readUnsignedByte() );
+                                        }
+                                        
+                                        MonsterDebugger.trace( me, 'got result' );
+
+                                        result = outputArray;
+                                    }
+                                    catch ( ex:Error )
+                                    {
+                                        MonsterDebugger.trace( me, 'fail to get result: ' + ex.toString() );
+
+                                        dfd.reject( ex.toString() );
+
+                                        return;
+                                    }
+                                }
+                                
+
                                 dfd.resolve( 
                                 {
                                     guid: ticket.guid,
@@ -180,6 +199,17 @@ package data.containers
             });
 
             return ticket;
+        }
+
+        function RAWAudioContainer(mic:Microphone)
+        {
+            _type = 'raw-audio';
+            _mic = mic;
+        }
+
+        public override function download(type:String):Ticket
+        {
+            return extract(type, false);
         }
 
         public override function upload(type:String, url:String):Ticket
