@@ -245,7 +245,7 @@ package data.containers
 
         public override function download(type:String):Ticket
         {
-            return extract(type, false);
+            return extract( type, false );
         }
 
         public override function upload(type:String, url:String):Ticket
@@ -254,7 +254,7 @@ package data.containers
             var dfd:Deferred = new Deferred();
             var ticket:GUIDTicket = new GUIDTicket(dfd.promise);
 
-            var tcktDownload:Ticket = download( type );
+            var tcktDownload:Ticket = extract( type, true );
 
             tcktDownload
                 .promise
