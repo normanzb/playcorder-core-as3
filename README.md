@@ -115,10 +115,4 @@ To see logs from Playcorder, install MonsterDebugger <http://www.monsterdebugger
 
 ##TODO
 
-1. Encode MP3 in worker
-2. Download or upload progress report
-3. Progressively upload (using multipart)
-5. Encode in speex or opus
-6. Javascript wrapper and Javascript playing and recording counterpart
-7. ByteArray player
-8. Cache manager and manual cache disposing
+see <https://github.com/normanzb/playcorder-core-as3/issues?labels=todo&page=1&state=open>
