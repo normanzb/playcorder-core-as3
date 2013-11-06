@@ -123,7 +123,7 @@ see <https://github.com/normanzb/playcorder-core-as3/issues?labels=todo&page=1&s
 
 ##Acknowledge
 
-This library internally used below 3rd party libraries, playcorder cannot work as what we have nowaday without the efforts from the authors.
+This library internally used or is using below 3rd party libraries, playcorder cannot work as what we have nowaday without the efforts from the authors.
 
 Shine MP3 Encoder:  Gabriel Bouvigne <http://gabriel.mp3-tech.org/>
 
