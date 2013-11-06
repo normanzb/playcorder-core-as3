@@ -13,38 +13,9 @@ package workers.encoders
     import com.demonsters.debugger.MonsterDebugger;
 
     public class Wave
-        extends Sprite
+        extends Base
     {
-        public static var CHANNEL_IN:String = 'channel.in';
-        public static var CHANNEL_OUT:String = 'channel.out';
-        private var inputChannel:MessageChannel;
-        private var outputChannel:MessageChannel;
-
-        private function handleInput(event:Event):void
-        {
-            var message:Message;
-
-            if ( !inputChannel.messageAvailable )
-            {
-                return;
-            }
-
-            message = inputChannel.receive() as Message;
-
-            if ( message == null )
-            {
-                return;
-            }
-
-            if ( message.type == 'encode' && message.value is Array )
-            {
-                MonsterDebugger.trace( this, 'start encoding' );
-
-                handleEncode.apply(this, message.value as Array);
-            }
-        }
-
-        private function handleEncode(...args):void
+        protected override function handleEncode(...args):void
         {
             var encoder:WaveEncoder = new WaveEncoder();
             var bytes:ByteArray;
@@ -73,13 +44,7 @@ package workers.encoders
 
         public function Wave()
         {
-            // register the Class so that we can use it to pass between workers
-            registerClassAlias("workers.messages.Message", Message);
-
-            inputChannel = Worker.current.getSharedProperty(CHANNEL_IN) as MessageChannel;
-            outputChannel = Worker.current.getSharedProperty(CHANNEL_OUT) as MessageChannel;
-
-            inputChannel.addEventListener(Event.CHANNEL_MESSAGE, handleInput);
+            
         }
     }
 }
