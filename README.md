@@ -126,4 +126,5 @@ see <https://github.com/normanzb/playcorder-core-as3/issues?labels=todo&page=1&s
 This library internally used below 3rd party libraries, playcorder cannot work as what we have nowaday without the efforts from the authors.
 
 Shine MP3 Encoder:  Gabriel Bouvigne <http://gabriel.mp3-tech.org/>
+
 Shine MP3 Encoder Alchemy: kikko <https://github.com/sri-soham/Shine-MP3-Encoder-on-AS3-Alchemy>
