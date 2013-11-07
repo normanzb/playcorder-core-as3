@@ -5,6 +5,7 @@ package data.containers
     import flash.net.URLLoader;
     import flash.net.URLLoaderDataFormat;
     import flash.net.URLRequest;
+    import flash.net.URLRequestHeader;
     import flash.net.URLRequestMethod;
     import flash.events.Event;
     import flash.events.IOErrorEvent;
@@ -265,8 +266,24 @@ package data.containers
                         var request:URLRequest = new URLRequest(url);
                         var loader:URLLoader = new URLLoader();
 
+                        var contentTypeFound:Boolean = false;
+
                         request.method = URLRequestMethod.POST;
                         request.data = obj.data;
+
+                        for( var l:int = request.requestHeaders.length; l--; )
+                        {
+                            if ( request.requestHeaders[l].name.toLowerCase == 'content-type' )
+                            {
+                                contentTypeFound = true;
+                                request.requestHeaders[l].value = 'application/octet-stream';
+                            }
+                        }
+
+                        if ( !contentTypeFound )
+                        {
+                            request.requestHeaders.push(new URLRequestHeader("Content-Type", 'application/octet-stream'));
+                        }
 
                         loader.addEventListener(
                             Event.COMPLETE, 
