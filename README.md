@@ -17,7 +17,7 @@ Audio Player and Recorder written in ActionScript3 with JavaScript interface.
 
 ###Player Version
 
-11.4
+11.9
 
 ###mxmlc Version
 
