@@ -4,3 +4,6 @@
 [submodule "ext-src/encoder-mp3"]
 	path = ext-src/encoder-mp3
 	url = https://github.com/kikko/Shine-MP3-Encoder-on-AS3-Alchemy.git
+[submodule "ext-src/promise-as3"]
+	path = ext-src/promise-as3
+	url = https://github.com/CodeCatalyst/promise-as3.git
