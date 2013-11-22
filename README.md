@@ -121,6 +121,13 @@ To see logs from Playcorder, install MonsterDebugger <http://www.monsterdebugger
 
 see <https://github.com/normanzb/playcorder-core-as3/issues?labels=todo&page=1&state=open>
 
+##Contribute
+
+You can contribute the project by:
+
+* Submitting pull request
+* Git tipping me: <https://www.gittip.com/normanzb/>
+
 ##Acknowledge
 
 This library internally used or is using below 3rd party libraries, playcorder cannot work as what we have nowaday without the efforts from the authors.
