@@ -212,6 +212,9 @@ package recorders
                 return;
             }
 
+            // stop recording so that buffer length can decrease
+            _stream.attachAudio( null );
+
             // wait for buffer flushed
             var dfd:Deferred = new Deferred();
 
