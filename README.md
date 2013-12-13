@@ -130,7 +130,7 @@ You can contribute the project by:
 
 * Submitting pull request
 * Git tipping me: <https://www.gittip.com/normanzb/>
-* Send bitcoin to _1**Norm**pp1objMYw18Hz4UsL6Gu735kNYM2M_ pls!
+* Send bitcoin to 1Normpp1objMYw18Hz4UsL6Gu735kNYM2M pls!
 
 ##Acknowledge
 
