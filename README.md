@@ -12,10 +12,13 @@ Audio Player and Recorder written in ActionScript3 with JavaScript interface.
 6. Internally used Monster Debugger for easier debugging.
 7. Non-blocking encoding.
 8. Extracting raw, wave and mp3 data.
+9. Super faster mp3 encoding: 60 secs recording can be encoded to mp3 (from raw to wave to mp3) within 5 secs, even when the SWF object is completely hidden!
+    * Flash slow down the timer when SWF is invisibile and hence lots of other encoder dramatically slowed down)
+    * Native shine encoder can encode the 60 secs wave file to mp3 within 2 secs.
 
 ##Versions
 
-###Player Version
+###Flash Player Version
 
 11.9
 
@@ -127,6 +130,7 @@ You can contribute the project by:
 
 * Submitting pull request
 * Git tipping me: <https://www.gittip.com/normanzb/>
+* Send bitcoin to _1**Norm**pp1objMYw18Hz4UsL6Gu735kNYM2M_ pls!
 
 ##Acknowledge
 
@@ -134,4 +138,4 @@ This library internally used or is using below 3rd party libraries, playcorder c
 
 Shine MP3 Encoder:  Gabriel Bouvigne <http://gabriel.mp3-tech.org/>
 
-Shine MP3 Encoder Alchemy: kikko <https://github.com/sri-soham/Shine-MP3-Encoder-on-AS3-Alchemy>
+Crossbridged Shine MP3 Encoder is inspired by: kikko <https://github.com/sri-soham/Shine-MP3-Encoder-on-AS3-Alchemy>

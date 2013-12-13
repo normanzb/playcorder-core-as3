@@ -9,9 +9,7 @@ package workers.encoders
 
     import workers.messages.Message;
 
-    import fr.kikko.lab.ShineMP3Encoder;
-    import im.norm.data.encoders.WaveEncoder;
-    import com.codecatalyst.util.*;
+    import im.norm.data.encoders.MP3Encoder;
     import com.demonsters.debugger.MonsterDebugger;
 
     public class MP3
@@ -21,8 +19,7 @@ package workers.encoders
         {
             var me:Base = this;
 
-            var waveEncoder:WaveEncoder = new WaveEncoder();
-            var mp3Encoder:ShineMP3Encoder;
+            var mp3Encoder:MP3Encoder = new MP3Encoder();
             var bytes:ByteArray;
             var prg:Message = new Message();
             
@@ -32,41 +29,25 @@ package workers.encoders
             // send progress 0% as start signal
             outputChannel.send( prg );
 
-            MonsterDebugger.trace( me, 'encoding mp3: encoding to wave' );
+            MonsterDebugger.trace( me, 'encoding to mp3...' );
 
-            bytes = waveEncoder.encode.apply(waveEncoder, args);
+            bytes = mp3Encoder.encode.apply(mp3Encoder, args);
 
-            prg.value = 50;
+            MonsterDebugger.trace( me, 'encoding mp3: completed' );
 
-            // send progress 50% as end signal of encoding wave
+            prg.value = 100;
+
+            // send progress 100% as end signal of encoding mp3
             outputChannel.send( prg );
 
-            mp3Encoder = new ShineMP3Encoder( bytes );
+            MonsterDebugger.trace( me, 'try to send the encoding result data' );
 
-            mp3Encoder.addEventListener(Event.COMPLETE, function(evt:Event):void
-            {
-                MonsterDebugger.trace( me, 'encoding mp3: completed' );
+            var result:Message = new Message();
+            result.type = 'result';
+            result.value = bytes;
 
-                prg.value = 100;
-
-                // send progress 100% as end signal of encoding mp3
-                outputChannel.send( prg );
-
-                nextTick(function():void
-                {
-                    MonsterDebugger.trace( me, 'try to send the encoding result data' );
-
-                    var result:Message = new Message();
-                    result.type = 'result';
-                    result.value = mp3Encoder.mp3Data;
-
-                    // send encoded result
-                    outputChannel.send( result );
-                });
-            });
-
-            MonsterDebugger.trace( me, 'encoding mp3: starting' );
-            mp3Encoder.start();
+            // send encoded result
+            outputChannel.send( result );
         }
     }
 }

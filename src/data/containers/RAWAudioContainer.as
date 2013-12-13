@@ -16,7 +16,7 @@ package data.containers
     import data.encoders.WaveEncoder;
     import data.encoders.MP3Encoder;
     import im.norm.data.encoders.WaveEncoder;
-    import fr.kikko.lab.ShineMP3Encoder;
+    import im.norm.data.encoders.MP3Encoder;
     import events.EncoderEvent;
     import workers.messages.Message;
 
@@ -113,7 +113,7 @@ package data.containers
                     {
                         // hardcode to disable the mp3 async encoding due to unknown issue that prevent
                         // encoding from start in shine mp3 encoder alchemy
-                        if ( Worker.isSupported && false )
+                        if ( Worker.isSupported )
                         {
                             MonsterDebugger.trace( me, 'worker is supported' );
 
@@ -142,31 +142,14 @@ package data.containers
                         {
                             MonsterDebugger.trace( me, 'worker is NOT supported' );
 
-                            // convert the data to wave
-                            extract("wave", true)
-                                .promise
-                                .then(function(result:*):void
-                                {
-                                    if ( result == null || result.data == null || !(result['data'] is ByteArray) )
-                                    {
-                                        MonsterDebugger.trace( me, 'cannot extract wave ByteArray' );
-                                        dfdEncoding.reject('cannot extract wave ByteArray');
-                                    }
+                            var mp3e:im.norm.data.encoders.MP3Encoder = new im.norm.data.encoders.MP3Encoder();
+                            var mp3ByteArray:ByteArray = mp3e.encode( ba, 
+                            {
+                                rate: sampleRates[ _mic.rate ],
+                                numberOfChannels: 1
+                            } );
 
-                                    MonsterDebugger.trace( me, 'converting wave to mp3' );
-
-                                    var sEncoder:ShineMP3Encoder = new ShineMP3Encoder( result['data'] as ByteArray );
-                                    sEncoder.addEventListener(Event.COMPLETE, function(evt:Event):void
-                                    {
-                                        MonsterDebugger.trace( me, 'converting is done' );
-                                        nextTick(function():void
-                                        {
-                                            dfdEncoding.resolve( sEncoder.mp3Data );
-                                        });
-                                    });
-                                    sEncoder.start();
-
-                                });
+                            dfdEncoding.resolve( mp3ByteArray );
                         }
                     }
                     else

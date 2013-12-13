@@ -32,6 +32,17 @@
             padding: 0 10px;
             display: inline-block;
         }
+        #playcorder
+        {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+        #playcorder.ready
+        {
+            top: -9999px;
+            left: -9999px;
+        }
     </style>
 </head>
 <body>
@@ -40,7 +51,7 @@
         <table>
             <tr>
                 <td>JavaScript</td>
-                <td rowspan="2"><button id="mic-start">start</button></td>
+                <td rowspan="2"><button id="mic-start" disabled="disabled">start (downloading SWF... )</button></td>
                 <td rowspan="2">-&gt;</td>
                 <td rowspan="2"><button id="mic-stop" disabled="disabled">stopped</button></td>
                 <td rowspan="2">-&gt;</td>
@@ -48,17 +59,23 @@
                 <td>-&gt;</td>
                 <td><button id="mic-encode-wave" disabled="disabled">encode to wave (js)</button></td>
                 <td rowspan="2">-&gt;</td>
-                <td  rowspan="2"><button id="mic-play-buffer" disabled="disabled">play shared buffer (js)</button></td>
+                <td  rowspan="2">
+                    <button id="mic-buffer-play" disabled="disabled">play shared buffer (js)</button> <br />
+                    <button id="mic-buffer-extract" disabled="disabled">extract as file (js)</button> <br />
+                    <button id="mic-buffer-hexview" disabled="disabled">show in hex view (js)</button>
+                </td>
                 <td rowspan="2">-&gt;</td>
                 <td>TODO: upload to ./test as wave file (js)</td>
             </tr>
             <tr>
                 <td>ActionScript</td>
                 <td colspan="3">
-                    <button id="mic-download-wave" disabled="disabled" style="width: 100%">download as wave file (as)</button><br />
-                    <button id="mic-download-mp3" disabled="disabled" style="width: 100%">download as mp3 file (as)</button>
+                    <button id="mic-download-wave" disabled="disabled" style="width: 100%">download as wave (as)</button><br />
+                    <button id="mic-download-mp3" disabled="disabled" style="width: 100%">download as mp3  (as)</button><br />
+                    <button id="mic-upload-wave" disabled="disabled">upload to ./test as wave file (as)</button>
+                    <button id="mic-upload-mp3" disabled="disabled">upload to ./test as mp3 file (as)</button>
                 </td>
-                <td><button id="mic-upload-wave" disabled="disabled">upload to ./test as wave file (as)</button></td>
+                <td></td>
             </tr>
         </table>
     </div>
@@ -71,6 +88,17 @@
     <span class="caption">Shared Buffer Hex View:</span>
     <div id="view-hex"></div>
     <script type="text/javascript">
+
+        forceDownload = function(blob, filename){
+            var url = (window.URL || window.webkitURL).createObjectURL(blob);
+            var link = window.document.createElement('a');
+            link.href = url;
+            link.download = filename || 'file';
+            var click = document.createEvent("Event");
+            click.initEvent("click", true, true);
+            link.dispatchEvent(click);
+        }
+
         function floatTo16BitPCM(output, offset, input){
             for (var i = 0; i < input.length; i++, offset+=2){
                 var s = Math.max(-1, Math.min(1, input[i]));
@@ -183,12 +211,19 @@
                         var btnEncodeWave = document.getElementById('mic-encode-wave');
                         var btnDownloadWave = document.getElementById('mic-download-wave');
                         var btnDownloadMP3 = document.getElementById('mic-download-mp3');
-                        var btnPlayBuffer = document.getElementById('mic-play-buffer');
+                        var btnPlayBuffer = document.getElementById('mic-buffer-play');
+                        var btnShowHex = document.getElementById('mic-buffer-hexview');
                         var btnUploadWave = document.getElementById('mic-upload-wave');
+                        var btnUploadMP3 = document.getElementById('mic-upload-mp3');
+                        var btnDownloadAsFile = document.getElementById('mic-buffer-extract');
                         var elViewHex = document.getElementById('view-hex');                        
                         var sharedArrayBuffer;
                         var sharedDownloadObject;
                         var sharedAudioContext;
+
+                        btnStart.removeAttribute('disabled');
+                        btnStart.innerText = 'start';
+                        document.getElementById('playcorder').className += " ready";
                         
                         // init rtmp recorder
                         // pc.recorder.initialize({
@@ -268,6 +303,8 @@
                             btnDownloadRaw.removeAttribute('disabled');
                             btnDownloadWave.removeAttribute('disabled');
                             btnDownloadMP3.removeAttribute('disabled');
+                            btnUploadWave.removeAttribute('disabled');
+                            btnUploadMP3.removeAttribute('disabled');
 
                             elDuration.innerText = pc.recorder.result.duration();
 
@@ -367,13 +404,13 @@
                                 arr.push(ui8a[i]);
                             }
 
-                            elViewHex.innerText = arr.map(function(el){
-                                var ret = el.toString(16);
-                                if (ret.length == 1) {
-                                    ret = "0"+ret;
-                                }
-                                return ret;
-                            }).join(' ');
+                            // elViewHex.innerText = arr.map(function(el){
+                            //     var ret = el.toString(16);
+                            //     if (ret.length == 1) {
+                            //         ret = "0"+ret;
+                            //     }
+                            //     return ret;
+                            // }).join(' ');
 
                             btnPlayBuffer.removeAttribute('disabled');
                         };
@@ -387,13 +424,7 @@
 
                                 console.log('mp3 length: ' + obj.length);
 
-                                elViewHex.innerText = obj.data.map(function(el){
-                                    var ret = el.toString(16);
-                                    if (ret.length == 1) {
-                                        ret = "0"+ret;
-                                    }
-                                    return ret;
-                                }).join(' ');
+                                console.log('done:' + new Date() * 1);
 
                                 // try to convert it to arraybuffer
                                 if ( !ArrayBuffer ){
@@ -412,7 +443,6 @@
                                 sharedDownloadObject = obj;
 
                                 btnPlayBuffer.removeAttribute('disabled');
-                                btnUploadWave.removeAttribute('disabled');
                             };
                             pc.recorder.result.ondownloadfailed = function(obj)
                             {
@@ -424,7 +454,25 @@
                             };
 
                             // try to download data
+                            console.log('start:' + new Date() * 1);
                             downloadGuid = pc.recorder.result.download( 'mp3' );
+                        };
+
+                        btnShowHex.onclick = function(){
+                            var ui8a = new Uint8Array( sharedArrayBuffer );
+                            var arr = [];
+                            
+                            for(var i = 0; i < ui8a.length;i++){
+                                arr.push(ui8a[i]);
+                            }
+
+                            elViewHex.innerText = obj.data.map(function(el){
+                                var ret = el.toString(16);
+                                if (ret.length == 1) {
+                                    ret = "0"+ret;
+                                }
+                                return ret;
+                            }).join(' ');
                         };
 
                         btnDownloadWave.onclick = function() {
@@ -436,13 +484,7 @@
 
                                 console.log('wave length: ' + obj.length);
 
-                                elViewHex.innerText = obj.data.map(function(el){
-                                    var ret = el.toString(16);
-                                    if (ret.length == 1) {
-                                        ret = "0"+ret;
-                                    }
-                                    return ret;
-                                }).join(' ');
+                                console.log('done:' + new Date() * 1);
 
                                 // try to convert it to arraybuffer
                                 if ( !ArrayBuffer ){
@@ -461,7 +503,6 @@
                                 sharedDownloadObject = obj;
 
                                 btnPlayBuffer.removeAttribute('disabled');
-                                btnUploadWave.removeAttribute('disabled');
                             };
                             pc.recorder.result.ondownloadfailed = function(obj)
                             {
@@ -474,6 +515,7 @@
 
 
                             // try to download data
+                            console.log('start:' + new Date() * 1);
                             downloadGuid = pc.recorder.result.download( 'wave' );
                         };
 
@@ -531,6 +573,39 @@
                                 alert(obj.message);
                             };
                             console.log('upload guid:', uploadGuid);
+                        };
+
+                        btnUploadMP3.onclick = function(){
+                            var uploadGuid;
+                            uploadGuid = pc.recorder.result.upload('mp3', './test');
+                            pc.recorder.result.onuploaded = function(obj)
+                            {
+                                if (uploadGuid != obj.guid){
+                                    return;
+                                }
+                                alert('uploaded');
+                            };
+                            pc.recorder.result.onuploadfailed = function(obj)
+                            {
+                                if (uploadGuid != obj.guid){
+                                    return;
+                                }
+                                alert(obj.message);
+                            };
+                            console.log('upload guid:', uploadGuid);
+                        };
+
+                        btnDownloadAsFile.onclick = function() {
+                            var dv = new DataView(sharedArrayBuffer);
+                            var type = 'audio/wav';
+                            var filename = 'file.wav';
+                            
+                            if ( dv.getUint8(0) == 255 ) {
+                                type = 'audio/mp3';
+                                filename = 'file.mp3';
+                            }
+
+                            forceDownload( new Blob([ dv ], { type: type} ), filename );
                         };
                         
                         // update the recorder volumn
