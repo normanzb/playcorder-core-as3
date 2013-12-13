@@ -64,8 +64,6 @@
                     <button id="mic-buffer-extract" disabled="disabled">extract as file (js)</button> <br />
                     <button id="mic-buffer-hexview" disabled="disabled">show in hex view (js)</button>
                 </td>
-                <td rowspan="2">-&gt;</td>
-                <td>TODO: upload to ./test as wave file (js)</td>
             </tr>
             <tr>
                 <td>ActionScript</td>
@@ -329,14 +327,6 @@
 
                                 console.log('audio data length: ' + obj.length);
 
-                                elViewHex.innerText = obj.data.map(function(el){
-                                    var ret = el.toString(16);
-                                    if (ret.length == 1) {
-                                        ret = "0"+ret;
-                                    }
-                                    return ret;
-                                }).join(' ');
-
                                 // try to convert it to arraybuffer
                                 if ( !ArrayBuffer ){
                                     return;
@@ -354,6 +344,8 @@
                                 sharedDownloadObject = obj;
 
                                 btnEncodeWave.removeAttribute("disabled");
+                                btnShowHex.removeAttribute('disabled');
+                                btnDownloadAsFile.removeAttribute('disabled');
 
                             };
 
@@ -404,15 +396,9 @@
                                 arr.push(ui8a[i]);
                             }
 
-                            // elViewHex.innerText = arr.map(function(el){
-                            //     var ret = el.toString(16);
-                            //     if (ret.length == 1) {
-                            //         ret = "0"+ret;
-                            //     }
-                            //     return ret;
-                            // }).join(' ');
-
                             btnPlayBuffer.removeAttribute('disabled');
+                            btnShowHex.removeAttribute('disabled');
+                            btnDownloadAsFile.removeAttribute('disabled');
                         };
 
                         btnDownloadMP3.onclick = function() {
@@ -443,6 +429,8 @@
                                 sharedDownloadObject = obj;
 
                                 btnPlayBuffer.removeAttribute('disabled');
+                                btnShowHex.removeAttribute('disabled');
+                                btnDownloadAsFile.removeAttribute('disabled');
                             };
                             pc.recorder.result.ondownloadfailed = function(obj)
                             {
@@ -466,7 +454,7 @@
                                 arr.push(ui8a[i]);
                             }
 
-                            elViewHex.innerText = obj.data.map(function(el){
+                            elViewHex.innerText = arr.map(function(el){
                                 var ret = el.toString(16);
                                 if (ret.length == 1) {
                                     ret = "0"+ret;
@@ -503,6 +491,8 @@
                                 sharedDownloadObject = obj;
 
                                 btnPlayBuffer.removeAttribute('disabled');
+                                btnShowHex.removeAttribute('disabled');
+                                btnDownloadAsFile.removeAttribute('disabled');
                             };
                             pc.recorder.result.ondownloadfailed = function(obj)
                             {
