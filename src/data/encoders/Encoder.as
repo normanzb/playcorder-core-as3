@@ -19,9 +19,10 @@ package data.encoders
 
     public class Encoder
     {
-        protected static var workerByteClass:Class;
+        protected var workerBytes:ByteArray;
         protected var backgroundWorker:Worker;
         protected var encodingPromise:Promise;
+        protected var targetFormat:String;
 
         public function Encoder()
         {
@@ -60,7 +61,9 @@ package data.encoders
 
             encodingPromise = dfd.promise.then(funcCleanUp, funcCleanUp);
 
-            backgroundWorker = WorkerDomain.current.createWorker(new workerByteClass);
+            backgroundWorker = WorkerDomain.current.createWorker(workerBytes);
+
+            backgroundWorker.setSharedProperty('target.format', targetFormat);
 
             inputChn = Worker.current.createMessageChannel(backgroundWorker);
             backgroundWorker.setSharedProperty(Base.CHANNEL_IN, inputChn);

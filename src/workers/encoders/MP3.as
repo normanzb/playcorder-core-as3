@@ -7,9 +7,10 @@ package workers.encoders
     import flash.system.MessageChannel;
     import flash.system.Worker;
 
+    import im.norm.data.encoders.MP3Encoder;
     import workers.messages.Message;
 
-    import im.norm.data.encoders.MP3Encoder;
+    
     import com.demonsters.debugger.MonsterDebugger;
 
     public class MP3
@@ -18,7 +19,6 @@ package workers.encoders
         protected override function handleEncode(...args):void
         {
             var me:Base = this;
-
             var mp3Encoder:MP3Encoder = new MP3Encoder();
             var bytes:ByteArray;
             var prg:Message = new Message();
@@ -31,7 +31,7 @@ package workers.encoders
 
             MonsterDebugger.trace( me, 'encoding to mp3...' );
 
-            bytes = mp3Encoder.encode.apply(mp3Encoder, args);
+            bytes = mp3Encoder.encode..apply(mp3Encoder, args);
 
             MonsterDebugger.trace( me, 'encoding mp3: completed' );
 

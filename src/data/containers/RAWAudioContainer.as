@@ -16,7 +16,6 @@ package data.containers
     import data.encoders.WaveEncoder;
     import data.encoders.MP3Encoder;
     import im.norm.data.encoders.WaveEncoder;
-    import im.norm.data.encoders.MP3Encoder;
     import events.EncoderEvent;
     import workers.messages.Message;
 
@@ -111,46 +110,27 @@ package data.containers
                     }
                     else if ( type == "mp3" )
                     {
-                        // hardcode to disable the mp3 async encoding due to unknown issue that prevent
-                        // encoding from start in shine mp3 encoder alchemy
-                        if ( Worker.isSupported )
-                        {
-                            MonsterDebugger.trace( me, 'worker is supported' );
 
-                            var meAsync:data.encoders.MP3Encoder = new data.encoders.MP3Encoder();
+                        var meAsync:data.encoders.MP3Encoder = new data.encoders.MP3Encoder();
 
-                            meAsync
-                                .encode( ba, {
-                                    rate: sampleRates[ _mic.rate ],
-                                    numberOfChannels: 1
-                                })
-                                .then(
-                                    function(result:*):void
-                                    {
-                                        MonsterDebugger.trace( me, 'async mp3 encoding finished' );
-
-                                        if ( !(result is ByteArray) )
-                                        {
-                                            dfdEncoding.reject('result is not ByteArray');
-                                            return;
-                                        }
-
-                                        dfdEncoding.resolve( result );
-                                    });
-                        }
-                        else
-                        {
-                            MonsterDebugger.trace( me, 'worker is NOT supported' );
-
-                            var mp3e:im.norm.data.encoders.MP3Encoder = new im.norm.data.encoders.MP3Encoder();
-                            var mp3ByteArray:ByteArray = mp3e.encode( ba, 
-                            {
+                        meAsync
+                            .encode( ba, {
                                 rate: sampleRates[ _mic.rate ],
                                 numberOfChannels: 1
-                            } );
+                            })
+                            .then(
+                                function(result:*):void
+                                {
+                                    MonsterDebugger.trace( me, 'async mp3 encoding finished' );
 
-                            dfdEncoding.resolve( mp3ByteArray );
-                        }
+                                    if ( !(result is ByteArray) )
+                                    {
+                                        dfdEncoding.reject('result is not ByteArray');
+                                        return;
+                                    }
+
+                                    dfdEncoding.resolve( result );
+                                });
                     }
                     else
                     {

@@ -5,6 +5,7 @@ package workers.encoders
     import flash.system.MessageChannel;
     import flash.system.Worker;
     import flash.events.Event;
+    import flash.utils.ByteArray;
 
     import workers.messages.Message;
 
@@ -15,6 +16,7 @@ package workers.encoders
     {
         public static var CHANNEL_IN:String = 'channel.in';
         public static var CHANNEL_OUT:String = 'channel.out';
+        public static var INTERNAL_ENCODER:String = 'internal.encoder';
 
         protected var inputChannel:MessageChannel;
         protected var outputChannel:MessageChannel;
@@ -45,7 +47,7 @@ package workers.encoders
 
         protected function handleEncode(...args):void
         {
-
+            throw new Error("Not implemented");
         }
 
         public function Base()

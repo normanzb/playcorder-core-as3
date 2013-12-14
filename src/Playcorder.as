@@ -5,6 +5,8 @@ package
     import flash.display.Stage;
     import flash.events.Event;
     import flash.media.Microphone;
+    import flash.system.Worker;
+    import flash.utils.ByteArray;
 
     import com.demonsters.debugger.MonsterDebugger;
     import com.codecatalyst.promise.Deferred;
@@ -14,6 +16,9 @@ package
     import recorders.Recorder;
     import players.Player;
     import interoperators.Interoperator;
+    import workers.encoders.Base;
+    import workers.encoders.MP3;
+    import workers.encoders.Wave;
 
     [SWF(width="240", height="160", frameRate="24", backgroundColor="#FFFFFF")]
     public class Playcorder extends Sprite
@@ -28,9 +33,11 @@ package
         private var _playerInited:Boolean = false;
         private var _mic:Microphone;
         public static var stage:Stage;
+        public static var inst:Playcorder;
 
         private function onAddedToStage(event:Event):void
         {
+            inst = this;
             Playcorder.stage = this.stage;
             interop = Interoperator(interoperators.Factory.inst.produce(this));
         }
@@ -49,9 +56,30 @@ package
             // Start the MonsterDebugger
             MonsterDebugger.initialize(this);
 
-            MonsterDebugger.trace(this, 'instantiated');
+            if ( Worker.current.isPrimordial)
+            {
+                addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+                MonsterDebugger.trace(this, 'instantiated:primordial');
+            }
+            else
+            {
+                var workerEncoder:Base;
+                var format:String = Worker.current.getSharedProperty('target.format') as String;
 
-            addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+                MonsterDebugger.trace(this, 'target format: ' + format);
+
+                if (format == 'mp3')
+                {
+                    workerEncoder = new MP3();
+                }
+                else
+                {
+                    workerEncoder = new Wave();
+                }
+                
+                addChild( workerEncoder );
+                MonsterDebugger.trace(this, 'instantiated:worker');
+            }
 
         }
 
