@@ -13,8 +13,8 @@ Audio Player and Recorder written in ActionScript3 with JavaScript interface.
 7. Non-blocking encoding.
 8. Extracting raw, wave and mp3 data.
 9. Super faster mp3 encoding: 60 secs recording can be encoded to mp3 (from raw to wave to mp3) within 5 secs, even when the SWF object is completely hidden!
-    * Flash slow down the timer when SWF is invisibile and hence lots of other encoder dramatically slowed down)
-    * Native shine encoder can encode the 60 secs wave file to mp3 within 2 secs.
+    * We workarounded an issue that, when SWF is invisible, flash slow down the timer dramatically.
+    * Native shine encoder can encode the 60 secs wave file to mp3 within 2 secs while we do both raw to wave and wave to mp3 within totally 5 secs, not bad eh?
 
 ##Versions
 
