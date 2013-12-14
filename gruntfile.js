@@ -45,19 +45,19 @@ module.exports = function(grunt) {
                         }
 
                         // update path
-                        var cmdWaveWorker = grunt.config('shell.worker-wave.command')
-                            .replace(/_placeholder_/g, pathOfCompiler);
+                        // var cmdWaveWorker = grunt.config('shell.worker-wave.command')
+                        //     .replace(/_placeholder_/g, pathOfCompiler);
 
-                        console.log('wave worker compiling command to exec: ', cmdWaveWorker);
+                        // console.log('wave worker compiling command to exec: ', cmdWaveWorker);
 
-                        grunt.config('shell.worker-wave.command', cmdWaveWorker);
+                        // grunt.config('shell.worker-wave.command', cmdWaveWorker);
 
-                        var cmdMP3 = grunt.config('shell.worker-mp3.command')
-                            .replace(/_placeholder_/g, pathOfCompiler);
+                        // var cmdMP3 = grunt.config('shell.worker-mp3.command')
+                        //     .replace(/_placeholder_/g, pathOfCompiler);
 
-                        console.log('core compiling command to exec: ', cmdMP3);
+                        // console.log('core compiling command to exec: ', cmdMP3);
 
-                        grunt.config('shell.worker-mp3.command', cmdMP3);
+                        // grunt.config('shell.worker-mp3.command', cmdMP3);
 
                         var cmdCore = grunt.config('shell.core.command')
                             .replace(/_placeholder_/g, pathOfCompiler);
@@ -70,30 +70,30 @@ module.exports = function(grunt) {
                     }
                 }
             },
-            'worker-wave': {
-                command: '_placeholder_ workers/encoders/Wave.as -library-path+=../lib/ -output ../tmp/Worker.Encoder.Wave.swf -source-path+=./ -source-path+=../ext-src/promise-as3/src/ -source-path+=../ext-src/encoder-wave/src/ -target-player=' + TARGET_PLAYER,
-                options: {
-                    stdout: true,
-                    stderr: true,
-                    failOnError: true,
-                    execOptions: {
-                        cwd: 'src'
-                    }
-                }
-            },
-            'worker-mp3': {
-                command: '_placeholder_ workers/encoders/MP3.as -library-path+=../lib/ -library-path+=../ext-src/encoder-mp3/lib/ -output ../tmp/Worker.Encoder.MP3.swf -source-path+=./ -source-path+=../ext-src/promise-as3/src/ -source-path+=../ext-src/encoder-wave/src/ -source-path+=../ext-src/encoder-mp3/src/ -target-player=' + TARGET_PLAYER,
-                options: {
-                    stdout: true,
-                    stderr: true,
-                    failOnError: true,
-                    execOptions: {
-                        cwd: 'src'
-                    }
-                }
-            },
+            // 'worker-wave': {
+            //     command: '_placeholder_ workers/encoders/Wave.as -debug=false -optimize=true -library-path+=../lib/ -output ../tmp/Worker.Encoder.Wave.swf -source-path+=./ -source-path+=../ext-src/promise-as3/src/ -source-path+=../ext-src/encoder-wave/src/ -target-player=' + TARGET_PLAYER,
+            //     options: {
+            //         stdout: true,
+            //         stderr: true,
+            //         failOnError: true,
+            //         execOptions: {
+            //             cwd: 'src'
+            //         }
+            //     }
+            // },
+            // 'worker-mp3': {
+            //     command: '_placeholder_ workers/encoders/MP3.as -debug=false -optimize=true -library-path+=../lib/ -library-path+=../ext-src/encoder-mp3/lib/ -output ../tmp/Worker.Encoder.MP3.swf -source-path+=./ -source-path+=../ext-src/promise-as3/src/ -source-path+=../ext-src/encoder-wave/src/ -source-path+=../ext-src/encoder-mp3/src/ -target-player=' + TARGET_PLAYER,
+            //     options: {
+            //         stdout: true,
+            //         stderr: true,
+            //         failOnError: true,
+            //         execOptions: {
+            //             cwd: 'src'
+            //         }
+            //     }
+            // },
             'core': {
-                command: '_placeholder_ Playcorder.as -library-path+=../lib/ -library-path+=../tmp/ -library-path+=../ext-src/encoder-mp3/lib/ -source-path+=./ -source-path+=../ext-src/promise-as3/src/ -source-path+=../tmp/ -source-path+=../ext-src/encoder-wave/src/ -source-path+=../ext-src/encoder-mp3/src/ -output ../dist/Playcorder.swf -target-player=' + TARGET_PLAYER,
+                command: '_placeholder_ Playcorder.as -debug=false -optimize=true -library-path+=../lib/ -library-path+=../tmp/ -library-path+=../ext-src/encoder-mp3/lib/ -source-path+=./ -source-path+=../ext-src/promise-as3/src/ -source-path+=../tmp/ -source-path+=../ext-src/encoder-wave/src/ -source-path+=../ext-src/encoder-mp3/src/ -output ../dist/Playcorder.swf -target-player=' + TARGET_PLAYER,
                 options: {
                     stdout: true,
                     stderr: true,
