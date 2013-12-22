@@ -104,8 +104,8 @@ To see logs from Playcorder, install MonsterDebugger <http://www.monsterdebugger
 10. recorder.result.upload(type, url, options) - upload result to remote url (using POST by default)
     * type - raw, wave or mp3
     * url - url of remote server
-    * options - the option object looks like this {format: 'post' or 'multipart', params:{ param1: 1, param2: 2 ... }}
-    * restrictions: see <https://github.com/jonasmonnier/Multipart.as/blob/master/README.md> 
+    * options - the option object looks like this {format: 'post' or 'multipart', fieldname: 'abcd', filename: 'abcd.mp3', params:{ param1: 1, param2: 2 ... } }
+    * multipart upload restrictions: see <https://github.com/normanzb/Multipart.as/blob/master/README.md> 
 
 ####Events
 

@@ -184,6 +184,8 @@ package data.containers
             var ticket:GUIDTicket = new GUIDTicket(dfd.promise);
             var format:String = 'post';
             var params:Object = null;
+            var fieldname:String = 'result';
+            var filename:String = 'result' + type.substr(0, 3);
             var urlHasParams:Boolean = false;
 
             if ( url.indexOf('?') >= 0 )
@@ -193,14 +195,27 @@ package data.containers
 
             var tcktDownload:Ticket = extract( type, true );
 
-            if ( options != null && typeof options['format'] == 'string' )
+            if ( options != null )
             {
-                format = options['format'];
-            }
+                if ( typeof options['format'] == 'string' )
+                {
+                    format = options['format'];
+                }
 
-            if ( options != null && typeof options['params'] == 'object' )
-            {
-                params = params;
+                if ( typeof options['params'] == 'object' )
+                {
+                    params = options['params'];
+                }
+
+                if ( typeof options['fieldname'] == 'string')
+                {
+                    fieldname = options['fieldname']
+                }
+
+                if ( typeof options['filename'] == 'string')
+                {
+                    filename = options['filename']
+                }
             }
 
             tcktDownload
@@ -229,7 +244,7 @@ package data.containers
                                 }
                             }
 
-                            mltUploader.addFile('result', obj.data, 'application/octet-stream', "result." + type.substr(0, 3));
+                            mltUploader.addFile(fieldname, obj.data, 'application/octet-stream', filename);
 
                             request = mltUploader.request;
                         }
@@ -307,7 +322,7 @@ package data.containers
                     };
 
                     // commented out since it is fixed by https://github.com/normanzb/Multipart.as/commit/1c05781137b4c928fee25a065b3c19ee192c47f0
-                    // // because of the limiation of flash
+                    // // because of the limitation of flash
                     // // user interaction is required before actual uploading
                     // if ( format == 'multipart' )
                     // {
