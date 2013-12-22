@@ -93,7 +93,7 @@ module.exports = function(grunt) {
             //     }
             // },
             'core': {
-                command: '_placeholder_ Playcorder.as -debug=false -optimize=true -library-path+=../lib/ -library-path+=../tmp/ -library-path+=../ext-src/encoder-mp3/lib/ -source-path+=./ -source-path+=../ext-src/promise-as3/src/ -source-path+=../tmp/ -source-path+=../ext-src/encoder-wave/src/ -source-path+=../ext-src/encoder-mp3/src/ -output ../dist/Playcorder.swf -target-player=' + TARGET_PLAYER,
+                command: '_placeholder_ Playcorder.as -debug=false -optimize=true -library-path+=../lib/ -library-path+=../tmp/ -library-path+=../ext-src/encoder-mp3/lib/ -source-path+=./ -source-path+=../tmp/ -source-path+=../ext-src/encoder-wave/src/ -source-path+=../ext-src/encoder-mp3/src/ -source-path+=../ext-src/uploader-multipart/src/ -source-path+=../ext-src/promise-as3/src/ -output ../dist/Playcorder.swf -target-player=' + TARGET_PLAYER,
                 options: {
                     stdout: true,
                     stderr: true,
