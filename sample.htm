@@ -567,7 +567,7 @@
 
                         btnUploadMP3.onclick = function(){
                             var uploadGuid;
-                            uploadGuid = pc.recorder.result.upload('mp3', './test');
+                            uploadGuid = pc.recorder.result.upload('mp3', './test', { format:'multipart', params: {test: "foobar"}});
                             pc.recorder.result.onuploaded = function(obj)
                             {
                                 if (uploadGuid != obj.guid){

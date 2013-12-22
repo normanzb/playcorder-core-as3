@@ -7,6 +7,7 @@ package data.containers
     import flash.net.URLRequest;
     import flash.net.URLRequestHeader;
     import flash.net.URLRequestMethod;
+    import flash.net.URLVariables;
     import flash.events.Event;
     import flash.events.IOErrorEvent;
     import flash.system.Worker;
@@ -18,6 +19,7 @@ package data.containers
     import events.EncoderEvent;
     import workers.messages.Message;
 
+    import com.jonas.net.Multipart;
     import com.codecatalyst.promise.Deferred;
     import com.codecatalyst.promise.Promise;
     import com.codecatalyst.util.*;
@@ -193,40 +195,105 @@ package data.containers
             return extract( type, false );
         }
 
-        public override function upload(type:String, url:String):Ticket
+        public override function upload(type:String, url:String, options:Object = null ):Ticket
         {
             var me:Container = this;
             var dfd:Deferred = new Deferred();
             var ticket:GUIDTicket = new GUIDTicket(dfd.promise);
+            var format:String = 'post';
+            var params:Object = null;
+            var urlHasParams:Boolean = false;
+
+            if ( url.indexOf('?') >= 0 )
+            {
+                urlHasParams = true;
+            }
 
             var tcktDownload:Ticket = extract( type, true );
+
+            if ( options != null && typeof options['format'] == 'string' )
+            {
+                format = options['format'];
+            }
+
+            if ( options != null && typeof options['params'] == 'object' )
+            {
+                params = params;
+            }
 
             tcktDownload
                 .promise
                 .then(
                     function(obj:Object):void
                     {
-                        // try uploading
-                        var request:URLRequest = new URLRequest(url);
                         var loader:URLLoader = new URLLoader();
+                        var request:URLRequest;
+                        var key:String;
 
-                        var contentTypeFound:Boolean = false;
+                        MonsterDebugger.trace( me, 'uploading... ' );
 
-                        request.method = URLRequestMethod.POST;
-                        request.data = obj.data;
-
-                        for( var l:int = request.requestHeaders.length; l--; )
+                        if ( format == 'multipart' )
                         {
-                            if ( request.requestHeaders[l].name.toLowerCase == 'content-type' )
+                            MonsterDebugger.trace( me, 'in multipart...' );
+
+                            var mltUploader:Multipart = new Multipart(url);
+
+                            if ( params != null )
                             {
-                                contentTypeFound = true;
-                                request.requestHeaders[l].value = 'application/octet-stream';
+                                for( key in params )
+                                {
+                                    mltUploader.addField( key, params[key] );
+                                }
                             }
-                        }
 
-                        if ( !contentTypeFound )
+                            mltUploader.addFile('result', obj.data, 'application/octet-stream', "result." + type.substr(0, 3));
+
+                            request = mltUploader.request;
+                        }
+                        else
                         {
-                            request.requestHeaders.push(new URLRequestHeader("Content-Type", 'application/octet-stream'));
+                            MonsterDebugger.trace( me, 'in plain post...' );
+
+                            // try uploading
+                            if ( params != null )
+                            {
+                                var uv:URLVariables = new URLVariables();
+
+                                for( key in params )
+                                {
+                                    uv[key] = params[key];
+                                }
+
+                                if ( urlHasParams )
+                                {
+                                    url += '&' + uv.toString();
+                                }
+                                else
+                                {
+                                    url += '?' + uv.toString();
+                                }
+                            }
+                            
+                            request = new URLRequest(url);
+
+                            var contentTypeFound:Boolean = false;
+
+                            request.method = URLRequestMethod.POST;
+                            request.data = obj.data;
+
+                            for( var l:int = request.requestHeaders.length; l--; )
+                            {
+                                if ( request.requestHeaders[l].name.toLowerCase == 'content-type' )
+                                {
+                                    contentTypeFound = true;
+                                    request.requestHeaders[l].value = 'application/octet-stream';
+                                }
+                            }
+
+                            if ( !contentTypeFound )
+                            {
+                                request.requestHeaders.push(new URLRequestHeader("Content-Type", 'application/octet-stream'));
+                            }
                         }
 
                         loader.addEventListener(
@@ -235,7 +302,6 @@ package data.containers
                             {
                                 dfd.resolve( null );
                             });
-
                         
                         loader.addEventListener(IOErrorEvent.IO_ERROR, 
                             function(evt:IOErrorEvent):void
@@ -243,7 +309,18 @@ package data.containers
                                 dfd.reject('fail to upload, ex: ' + evt.toString())
                             });
 
-                        loader.load(request);
+                        MonsterDebugger.trace( me, 'loading... ' );
+
+                        try
+                        {
+                            loader.load(request);
+                        }
+                        catch(ex:*)
+                        {
+                            MonsterDebugger.trace( me, 'failed to load ... ' );
+                            MonsterDebugger.trace( me, ex );
+                            dfd.reject(ex.toString());
+                        }
                     },
                     dfd.reject
                 );

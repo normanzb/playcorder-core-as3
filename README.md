@@ -101,7 +101,11 @@ To see logs from Playcorder, install MonsterDebugger <http://www.monsterdebugger
 7. recorder.result.type() - get type of result
 8. recorder.result.duration() - get duration of the result
 9. recorder.result.download(type) - download result as specified type, could be 'raw' or 'wave' or 'mp3'
-10. recorder.result.upload(type, url) - upload result to remote url (using POST)
+10. recorder.result.upload(type, url, options) - upload result to remote url (using POST by default)
+    * type - raw, wave or mp3
+    * url - url of remote server
+    * options - the option object looks like this {format: 'post' or 'multipart', params:{ param1: 1, param2: 2 ... }}
+    * restrictions: see <https://github.com/jonasmonnier/Multipart.as/blob/master/README.md> 
 
 ####Events
 

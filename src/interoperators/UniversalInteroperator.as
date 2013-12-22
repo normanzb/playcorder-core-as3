@@ -345,7 +345,7 @@ package interoperators
                 return ret;
             });
 
-            ExternalInterface.addCallback(MEMBER_NAME.RECORDER_RESULT_UPLOAD, function(type:String, url:String):String
+            ExternalInterface.addCallback(MEMBER_NAME.RECORDER_RESULT_UPLOAD, function(type:String, url:String, options:Object = null):String
             {
                 var ret:String = '';
                 var ticket:Ticket;
@@ -354,7 +354,7 @@ package interoperators
 
                 if ( playcorder.recorder && playcorder.recorder.result )
                 {
-                    ticket = playcorder.recorder.result.upload(type, url);
+                    ticket = playcorder.recorder.result.upload(type, url, options);
 
                     if ( ticket is GUIDTicket )
                     {

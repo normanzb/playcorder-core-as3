@@ -30,7 +30,7 @@ package data.containers
             throw "Not implemented";
         }
 
-        public function upload(type:String, url:String):Ticket
+        public function upload(type:String, url:String, options:Object = null ):Ticket
         {
             var dfd:Deferred = new Deferred();
             var ticket:GUIDTicket = new GUIDTicket(dfd.promise);
