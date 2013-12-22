@@ -15,7 +15,6 @@ package data.containers
     import tickets.Ticket;
     import data.encoders.WaveEncoder;
     import data.encoders.MP3Encoder;
-    import im.norm.data.encoders.WaveEncoder;
     import events.EncoderEvent;
     import workers.messages.Message;
 
@@ -67,46 +66,28 @@ package data.containers
                     }
                     else if ( type == "wave" )
                     {
-                        if ( Worker.isSupported )
-                        {
-                            MonsterDebugger.trace( me, 'worker is supported' );
 
-                            var weAsync:data.encoders.WaveEncoder = new data.encoders.WaveEncoder();
+                        var weAsync:data.encoders.WaveEncoder = new data.encoders.WaveEncoder();
 
-                            weAsync
-                                .encode( ba, {
-                                    rate: sampleRates[ _mic.rate ],
-                                    numberOfChannels: 1
-                                })
-                                .then(
-                                    function(result:*):void
-                                    {
-                                        MonsterDebugger.trace( me, 'async wave encoding finished' );
-
-                                        if ( !(result is ByteArray) )
-                                        {
-                                            dfdEncoding.reject('result is not ByteArray');
-                                            return;
-                                        }
-
-                                        dfdEncoding.resolve( result );
-                                    });
-                        }
-                        else
-                        {
-                            MonsterDebugger.trace( me, 'worker is NOT supported' );
-
-                            var we:im.norm.data.encoders.WaveEncoder = new im.norm.data.encoders.WaveEncoder();
-                            var waveByteArray:ByteArray = we.encode( ba, 
-                            {
+                        weAsync
+                            .encode( ba, {
                                 rate: sampleRates[ _mic.rate ],
                                 numberOfChannels: 1
-                            } );
+                            })
+                            .then(
+                                function(result:*):void
+                                {
+                                    MonsterDebugger.trace( me, 'async wave encoding finished' );
 
-                            dfdEncoding.resolve( waveByteArray );
+                                    if ( !(result is ByteArray) )
+                                    {
+                                        dfdEncoding.reject('result is not ByteArray');
+                                        return;
+                                    }
 
-                        }
-                            
+                                    dfdEncoding.resolve( result );
+                                });
+
                     }
                     else if ( type == "mp3" )
                     {
