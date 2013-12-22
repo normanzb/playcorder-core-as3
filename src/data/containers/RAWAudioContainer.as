@@ -61,17 +61,24 @@ package data.containers
                     MonsterDebugger.trace( me, 'data is byte array');
 
                     var ba:ByteArray = ByteArray(data);
+                    var encoder:data.encoders.Encoder;
 
                     if ( type == "raw" )
                     {
                         dfdEncoding.resolve( ba );
                     }
-                    else if ( type == "wave" )
+                    else if ( type == "wave" || type == "mp3" )
                     {
+                        if ( type == "wave" )
+                        {
+                            encoder = new data.encoders.WaveEncoder();
+                        }
+                        else if ( type == "mp3" )
+                        {
+                            encoder = new data.encoders.MP3Encoder();
+                        }
 
-                        var weAsync:data.encoders.WaveEncoder = new data.encoders.WaveEncoder();
-
-                        weAsync
+                        encoder
                             .encode( ba, {
                                 rate: sampleRates[ _mic.rate ],
                                 numberOfChannels: 1
@@ -79,32 +86,7 @@ package data.containers
                             .then(
                                 function(result:*):void
                                 {
-                                    MonsterDebugger.trace( me, 'async wave encoding finished' );
-
-                                    if ( !(result is ByteArray) )
-                                    {
-                                        dfdEncoding.reject('result is not ByteArray');
-                                        return;
-                                    }
-
-                                    dfdEncoding.resolve( result );
-                                });
-
-                    }
-                    else if ( type == "mp3" )
-                    {
-
-                        var meAsync:data.encoders.MP3Encoder = new data.encoders.MP3Encoder();
-
-                        meAsync
-                            .encode( ba, {
-                                rate: sampleRates[ _mic.rate ],
-                                numberOfChannels: 1
-                            })
-                            .then(
-                                function(result:*):void
-                                {
-                                    MonsterDebugger.trace( me, 'async mp3 encoding finished' );
+                                    MonsterDebugger.trace( me, 'async ' + type + ' encoding finished' );
 
                                     if ( !(result is ByteArray) )
                                     {
