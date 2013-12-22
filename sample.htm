@@ -70,8 +70,8 @@
                 <td colspan="3">
                     <button id="mic-download-wave" disabled="disabled" style="width: 100%">download as wave (as)</button><br />
                     <button id="mic-download-mp3" disabled="disabled" style="width: 100%">download as mp3  (as)</button><br />
-                    <button id="mic-upload-wave" disabled="disabled">upload to ./test as wave file (as)</button>
-                    <button id="mic-upload-mp3" disabled="disabled">upload to ./test as mp3 file (as)</button>
+                    <button id="mic-upload-wave" disabled="disabled">upload to ./test as wave file using plain post (as)</button> <br />
+                    <button id="mic-upload-mp3" disabled="disabled">upload to ./test as mp3 file using multipart(as)</button> <button id="mic-upload-mp3-confirm" disabled="disabled">click to confirm upload</button>
                 </td>
                 <td></td>
             </tr>
@@ -213,6 +213,7 @@
                         var btnShowHex = document.getElementById('mic-buffer-hexview');
                         var btnUploadWave = document.getElementById('mic-upload-wave');
                         var btnUploadMP3 = document.getElementById('mic-upload-mp3');
+                        var btnUploadMP3Confirm = document.getElementById('mic-upload-mp3-confirm');
                         var btnDownloadAsFile = document.getElementById('mic-buffer-extract');
                         var elViewHex = document.getElementById('view-hex');                        
                         var sharedArrayBuffer;
@@ -568,6 +569,12 @@
                         btnUploadMP3.onclick = function(){
                             var uploadGuid;
                             uploadGuid = pc.recorder.result.upload('mp3', './test', { format:'multipart', params: {test: "foobar"}});
+                            pc.recorder.result.onuploadinteraction = function(){
+                                btnUploadMP3Confirm.removeAttribute('disabled');
+                                btnUploadMP3Confirm.onclick = function(){
+                                    pc.recorder.result.interact();
+                                };
+                            };
                             pc.recorder.result.onuploaded = function(obj)
                             {
                                 if (uploadGuid != obj.guid){

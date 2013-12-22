@@ -42,7 +42,9 @@ package interoperators
             RECORDER_RESULT_UPLOAD                  : 'recorder_result_upload',
             RECORDER_RESULT_ONUPLOADED              : 'recorder_result_onuploaded',
             RECORDER_RESULT_ONUPLOADFAILED          : 'recorder_result_onuploadfailed',
+            RECORDER_RESULT_ONUPLOADINTERACTION     : 'recorder_result_onuploadinteraction',
             RECORDER_RESULT_DURATION                : 'recorder_result_duration',
+            RECORDER_RESULT_INTERACT                : 'recorder_result_interact',
             PLAYER_ONSTARTED                        : 'player_onstarted',
             PLAYER_ONSTOPPED                        : 'player_onstopped',
             PLAYER_START                            : 'player_start',
@@ -56,6 +58,7 @@ package interoperators
         private var _inited:Boolean = false;
         private var _findSelf:String;
         protected var _count:Number = 0;
+        private var _dfdInteraction:Object = null;
 
         private function secure(func:Function):Function
         {
@@ -363,6 +366,25 @@ package interoperators
 
                     ticket
                         .promise
+                        .then(function(obj:Object):*
+                        {
+                            // a uesr interaction is required
+                            if ( obj['deferred'] != null )
+                            {
+                                _dfdInteraction = obj['deferred'];
+
+                                nextTick(function():void
+                                {
+                                    callSelf
+                                    (
+                                        MEMBER_NAME.RECORDER_RESULT_ONUPLOADINTERACTION
+                                    );
+                                });
+
+                                return obj['promise'];
+                            }
+                            return obj;
+                        })
                         .then(
                             function():void
                             {
@@ -393,6 +415,23 @@ package interoperators
                 }
 
                 return ret;
+            });
+
+            ExternalInterface.addCallback(MEMBER_NAME.RECORDER_RESULT_INTERACT, function():void
+            {
+                MonsterDebugger.trace(this, 'external calls to recorder.result.interact()');
+
+                if ( _dfdInteraction != null )
+                {
+                    MonsterDebugger.trace(this, 'an waiting interact is found, resume it');
+
+                    if ( _dfdInteraction['resolve'] != null )
+                    {
+                        _dfdInteraction['resolve']( null );
+                    }
+
+                    _dfdInteraction = null;
+                }
             });
 
             ExternalInterface.addCallback(MEMBER_NAME.RECORDER_RESULT_DURATION, function():int

@@ -9,4 +9,4 @@
 	url = https://github.com/CodeCatalyst/promise-as3.git
 [submodule "ext-src/uploader-multipart"]
 	path = ext-src/uploader-multipart
-	url = https://github.com/jonasmonnier/Multipart.as.git
+	url = https://github.com/normanzb/Multipart.as.git

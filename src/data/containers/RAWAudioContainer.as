@@ -205,8 +205,9 @@ package data.containers
 
             tcktDownload
                 .promise
-                .then(
-                    function(obj:Object):void
+                .then(function(obj:Object):*
+                {
+                    var handleUpload:Function = function():void
                     {
                         var loader:URLLoader = new URLLoader();
                         var request:URLRequest;
@@ -303,9 +304,37 @@ package data.containers
                             MonsterDebugger.trace( me, ex );
                             dfd.reject(ex.toString());
                         }
-                    },
-                    dfd.reject
-                );
+                    };
+
+                    // commented out since it is fixed by https://github.com/normanzb/Multipart.as/commit/1c05781137b4c928fee25a065b3c19ee192c47f0
+                    // // because of the limiation of flash
+                    // // user interaction is required before actual uploading
+                    // if ( format == 'multipart' )
+                    // {
+                    //     var dfdInteraction:Deferred = new Deferred();
+                    //     var retDfd:Deferred = new Deferred();
+
+                    //     dfd.resolve
+                    //     ({
+                    //         requireInteraction: true, 
+                    //         deferred: 
+                    //         {
+                    //             resolve: function():void
+                    //             {
+                    //                 handleUpload.call(me);
+                    //             }
+                    //         },
+                    //         promise: retDfd.promise
+                    //     });
+
+                    //     dfd = retDfd;
+                    // }
+                    // else
+                    // {
+                         handleUpload.call(me);
+                    // }
+
+                }, dfd.reject);
             
             return ticket;   
         }
