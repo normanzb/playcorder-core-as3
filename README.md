@@ -100,7 +100,7 @@ To see logs from Playcorder, install MonsterDebugger <http://www.monsterdebugger
 6. recorder.disconnect() - disconnect (if applicable)
 7. recorder.result.type() - get type of result
 8. recorder.result.duration() - get duration of the result
-9. recorder.result.download(type) - download result as specified type, could be 'raw' or 'wave' or 'mp3'
+9. recorder.result.download(type) - extract result as specified type, could be 'raw' or 'wave' or 'mp3'
 10. recorder.result.upload(type, url, options) - upload result to remote url (using POST by default)
     * type - raw, wave or mp3
     * url - url of remote server
@@ -114,15 +114,16 @@ To see logs from Playcorder, install MonsterDebugger <http://www.monsterdebugger
 3. recorder.onstarted
 4. recorder.onstopped
 5. recorder.onchange -  possible event code are:
-
     * microphone.not_found - trigger when microphone is unplugged
     * microphone.found - trigger when microphone is plugged
     * microphone.muted - trigger when microphone is muted
     * microphone.unmuted - trigger when microphone is unmuted
-    
 6. recorder.onerror - possible event code are:
-
     * connection.fail - fire when the connection failed.
+7. recorder.result.onuploaded - trigger when uploading is done.
+8. recorder.result.onuploadfailed - trigger when uploading is failed.
+9. recorder.result.ondownloaded - trigger when downloading is done.
+10. recorder.result.ondownloadfailed - trigger when downloading is failed.
 
 ##TODO
 
