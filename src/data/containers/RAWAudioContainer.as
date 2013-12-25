@@ -109,7 +109,10 @@ package data.containers
                             function(ba:ByteArray):void
                             {
                                 var outputArray:Array;
+                                var count:int = 0;
                                 var result:*;
+
+                                MonsterDebugger.trace( me, 'copying byte array' );
 
                                 if ( returnByteArray )
                                 {
@@ -117,7 +120,8 @@ package data.containers
                                 }
                                 else
                                 {
-                                    outputArray = new Array();
+                                    outputArray = [0];
+                                    outputArray.length = ba.length;
 
                                     try
                                     {
@@ -125,7 +129,7 @@ package data.containers
 
                                         while( ba.bytesAvailable > 0 )
                                         {
-                                            outputArray.push( ba.readUnsignedByte() );
+                                            outputArray[count++] = ba.readUnsignedByte();
                                         }
                                         
                                         MonsterDebugger.trace( me, 'got result' );
@@ -142,6 +146,7 @@ package data.containers
                                     }
                                 }
                                 
+                                MonsterDebugger.trace( me, 'copying byte array: done' );
 
                                 dfd.resolve( 
                                 {

@@ -151,6 +151,8 @@ package interoperators
                 ExternalInterface, 
                 [ _findSelf , methodName ].concat(args)
             );
+
+            MonsterDebugger.trace(this, 'trigger ' + methodName + ':done');
         }  
 
         // override the init method, setup callbacks and expose member methods

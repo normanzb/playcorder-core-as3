@@ -284,9 +284,13 @@
 
                             btnStop.innerText = 'stop';
                             btnStop.removeAttribute('disabled', 'disabled');
+
+                            window.startTime = new Date() * 1;
                         };
 
                         pc.recorder.onstopped = function(evt) {
+
+                            window.recordingTime = window.startTime - new Date() * 1;
                             
                             if ( evt.guid != curGUID) 
                             {
