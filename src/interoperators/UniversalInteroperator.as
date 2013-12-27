@@ -1,6 +1,7 @@
 package interoperators
 {
     import flash.external.ExternalInterface;
+    import flash.utils.ByteArray;
 
     import interoperators.Factory;
     import connectors.IConnectable;
@@ -72,6 +73,28 @@ package interoperators
 
                 return func.apply(me, arguments);
             }
+        }
+
+        private function getExternalByteArray(ba:ByteArray):*
+        {
+            var outputArray:Array;
+            var count:int = 0;
+
+            MonsterDebugger.trace( this, 'copying byte array' );
+
+            outputArray = [0];
+            outputArray.length = ba.length;
+
+            ba.position = 0;
+
+            while( ba.bytesAvailable > 0 )
+            {
+                outputArray[count++] = ba.readUnsignedByte();
+            }
+            
+            MonsterDebugger.trace( this, 'copying byte array: done' );
+
+            return outputArray;
         }
 
         private function onRecorderConnected(event:RecorderEvent):void
@@ -314,13 +337,46 @@ package interoperators
                             .then(
                                 function(obj:Object):void
                                 {
+                                    var ba:ByteArray = obj.data as ByteArray;
+                                    var result:*;
+
+                                    if ( ba == null )
+                                    {
+                                        callSelf
+                                        (
+                                            MEMBER_NAME.RECORDER_RESULT_ONDOWNLOADFAILED,
+                                            {
+                                                guid: ret,
+                                                message: 'encoding failed, no properly ByteArray returned.'
+                                            }
+                                        );
+                                        return;
+                                    }
+
+                                    try
+                                    {
+                                        result = getExternalByteArray(ba);
+                                    }
+                                    catch(ex:*)
+                                    {
+                                        callSelf
+                                        (
+                                            MEMBER_NAME.RECORDER_RESULT_ONDOWNLOADFAILED,
+                                            {
+                                                guid: ret,
+                                                message: 'encoding failed:' + ex.toString()
+                                            }
+                                        );
+                                        return;
+                                    }
+
                                     nextTick(function():void
                                     {
                                         callSelf(
                                             MEMBER_NAME.RECORDER_RESULT_ONDOWNLOADED,
                                             {
                                                 guid: ret,
-                                                data: obj.data,
+                                                data: result,
                                                 length: obj.length,
                                                 channels: obj.channels,
                                                 rate: obj.rate

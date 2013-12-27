@@ -37,7 +37,7 @@ package data.containers
             5: 5512
         };
 
-        private function extract(type:String, returnByteArray:Boolean):Ticket
+        private function extract( type:String ):Ticket
         {
             var me:Container = this;
             var dfd:Deferred = new Deferred();
@@ -108,50 +108,12 @@ package data.containers
                         .then(
                             function(ba:ByteArray):void
                             {
-                                var outputArray:Array;
-                                var count:int = 0;
-                                var result:*;
-
-                                MonsterDebugger.trace( me, 'copying byte array' );
-
-                                if ( returnByteArray )
-                                {
-                                    result = ba;
-                                }
-                                else
-                                {
-                                    outputArray = [0];
-                                    outputArray.length = ba.length;
-
-                                    try
-                                    {
-                                        ba.position = 0;
-
-                                        while( ba.bytesAvailable > 0 )
-                                        {
-                                            outputArray[count++] = ba.readUnsignedByte();
-                                        }
-                                        
-                                        MonsterDebugger.trace( me, 'got result' );
-
-                                        result = outputArray;
-                                    }
-                                    catch ( ex:Error )
-                                    {
-                                        MonsterDebugger.trace( me, 'fail to get result: ' + ex.toString() );
-
-                                        dfd.reject( ex.toString() );
-
-                                        return;
-                                    }
-                                }
-                                
-                                MonsterDebugger.trace( me, 'copying byte array: done' );
+                                MonsterDebugger.trace( me, 'encoding all done, now returning.' );
 
                                 dfd.resolve( 
                                 {
                                     guid: ticket.guid,
-                                    data: result,
+                                    data: ba,
                                     length: ba.length,
                                     rate: _mic.rate,
                                     // always 1 input source from flash:
@@ -179,7 +141,7 @@ package data.containers
 
         public override function download(type:String):Ticket
         {
-            return extract( type, false );
+            return extract( type );
         }
 
         public override function upload(type:String, url:String, options:Object = null ):Ticket
@@ -198,7 +160,7 @@ package data.containers
                 urlHasParams = true;
             }
 
-            var tcktDownload:Ticket = extract( type, true );
+            var tcktDownload:Ticket = extract( type );
 
             if ( options != null )
             {
