@@ -189,11 +189,11 @@ package interoperators
                 return dfd.promise;
             }
 
-            ExternalInterface.addCallback(MEMBER_NAME.PLAYER_START, function(path:String):void
+            ExternalInterface.addCallback(MEMBER_NAME.PLAYER_START, function(source:* = null):void
             {
                 MonsterDebugger.trace(this, 'external calls to player.start()');
 
-                playcorder.player.start( path );
+                playcorder.player.start( source );
             });
 
             ExternalInterface.addCallback(MEMBER_NAME.PLAYER_STOP, function():void

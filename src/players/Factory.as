@@ -21,8 +21,14 @@ package players
                 case 'file':
                     ret = new FilePlayer(config);
                     break;
+                case 'local':
+                case 'byte':
+                case 'bytearray':
+                    ret = new LocalPlayer(config);
+                    break;
+                case 'auto':
                 default:
-                    ret = new Player(config);
+                    ret = new AutoPlayer(config);
                     break;
             }
 

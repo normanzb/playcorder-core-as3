@@ -37,7 +37,6 @@ package
 
         private function onAddedToStage(event:Event):void
         {
-            inst = this;
             Playcorder.stage = this.stage;
             interop = Interoperator(interoperators.Factory.inst.produce(this));
         }
@@ -53,6 +52,8 @@ package
 
         public function Playcorder()
         {
+            inst = this;
+            
             // Start the MonsterDebugger
             MonsterDebugger.initialize(this);
 
@@ -125,6 +126,8 @@ package
             }
 
             player = Player(players.Factory.inst.produce(config || {}));
+
+            MonsterDebugger.trace(this, 'player initialized');
 
             _playerInited = true;
 

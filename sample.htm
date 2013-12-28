@@ -61,6 +61,7 @@
                 <td rowspan="2">-&gt;</td>
                 <td  rowspan="2">
                     <button id="mic-buffer-play" disabled="disabled">play shared buffer (js)</button> <br />
+                    <button id="mic-buffer-play-as" disabled="disabled">play recorded audio (as)</button> <br />
                     <button id="mic-buffer-extract" disabled="disabled">extract as file (js)</button> <br />
                     <button id="mic-buffer-hexview" disabled="disabled">show in hex view (js)</button>
                 </td>
@@ -210,12 +211,14 @@
                         var btnDownloadWave = document.getElementById('mic-download-wave');
                         var btnDownloadMP3 = document.getElementById('mic-download-mp3');
                         var btnPlayBuffer = document.getElementById('mic-buffer-play');
+                        var btnPlayBufferAs = document.getElementById('mic-buffer-play-as');
                         var btnShowHex = document.getElementById('mic-buffer-hexview');
                         var btnUploadWave = document.getElementById('mic-upload-wave');
                         var btnUploadMP3 = document.getElementById('mic-upload-mp3');
                         var btnUploadMP3Confirm = document.getElementById('mic-upload-mp3-confirm');
                         var btnDownloadAsFile = document.getElementById('mic-buffer-extract');
-                        var elViewHex = document.getElementById('view-hex');                        
+                        var elViewHex = document.getElementById('view-hex');
+
                         var sharedArrayBuffer;
                         var sharedDownloadObject;
                         var sharedAudioContext;
@@ -308,6 +311,7 @@
                             btnDownloadMP3.removeAttribute('disabled');
                             btnUploadWave.removeAttribute('disabled');
                             btnUploadMP3.removeAttribute('disabled');
+                            btnPlayBufferAs.removeAttribute('disabled');
 
                             elDuration.innerText = pc.recorder.result.duration();
 
@@ -548,6 +552,20 @@
                             console.log('buffer assigned')
                             source.start(0);
                             console.log('started')
+                        };
+
+                        btnPlayBufferAs.onclick = function() {
+                            pc.player.initialize({});
+
+                            pc.player.onstarted = function(){
+                                console.log('play started');
+                            };
+
+                            pc.player.onstopped = function(){
+                                console.log('play stopped');
+                            };
+
+                            pc.player.start();
                         };
 
                         btnUploadWave.onclick = function(){

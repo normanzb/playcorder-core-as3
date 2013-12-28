@@ -18,6 +18,7 @@ package data.containers
     import data.encoders.MP3Encoder;
     import events.EncoderEvent;
     import workers.messages.Message;
+    import helpers.Constants;
 
     import com.jonas.net.Multipart;
     import com.codecatalyst.promise.Deferred;
@@ -29,13 +30,6 @@ package data.containers
         extends Container
     {
         private var _mic:Microphone;
-        private static var sampleRates:Object = {
-            44: 44100,
-            22: 22050,
-            11: 11025,
-            8: 8000,
-            5: 5512
-        };
 
         private function extract( type:String ):Ticket
         {
@@ -80,7 +74,7 @@ package data.containers
 
                         encoder
                             .encode( ba, {
-                                rate: sampleRates[ _mic.rate ],
+                                rate: Constants.sampleRates[ _mic.rate ],
                                 numberOfChannels: 1
                             })
                             .then(
@@ -333,7 +327,7 @@ package data.containers
                 var ba:ByteArray = ByteArray(data);
 
                 // each sample is a 32bit float == 4 bytes
-                ret = ba.length / ( sampleRates[ _mic.rate ] * 4 );
+                ret = ba.length / ( Constants.sampleRates[ _mic.rate ] * 4 );
             }
 
             return ret;
