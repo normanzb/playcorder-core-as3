@@ -155,7 +155,7 @@ package players
 
         private function downSampling():void
         {
-
+            throw new Error('Down sampling is not implemented yet, LocalPlayer currently support rate <= 44');
         }
 
         private function playSound():void
