@@ -2,19 +2,43 @@
 
 Audio Player and Recorder written in ActionScript3 with JavaScript interface.
 
-##Pros
+#Features
 
-1. Cleaner APIs, no global event handler needed, no global pollution.
-2. When doing realtime recording (RTMP), playcorder allows you to do a pre-connection before actual recording.
-3. SWF file can be hosted on CDN server.
-4. No privacy leaking when swf is hosted on CDN, microphone permission will be prompted again when page domain name changed. (This prevent any 3rd party to reuse the hosted SWF and hence gaining the microphone access permission WITHOUT actual user approval.)
-5. Multiple instance of playcorder is possible.
-6. Internally used Monster Debugger for easier debugging.
-7. Non-blocking encoding.
-8. Extracting raw, wave and mp3 data.
-9. Super faster mp3 encoding: 60 secs recording can be encoded to mp3 (from raw to wave to mp3) within 5 secs, even when the SWF object is completely hidden!
-    * We workarounded an issue that, when SWF is invisible, flash slow down the timer dramatically.
-    * Native shine encoder can encode the 60 secs wave file to mp3 within 2 secs while we do both raw to wave and wave to mp3 within totally 5 secs, not bad eh?
+##Recording
+
+* Recording audio without server support
+* RTMP recording if server available.
+
+##Playing
+
+* Playback remote audio file
+* Local playback, both recorded or bytearray audio.
+
+##Audio Encoding
+
+* Wave
+* MP3
+* Speex (WIP)
+* Flac (WIP)
+* Non-blocking faster encoding
+* Plugin system (WIP)
+
+##Javascript APIs
+
+* Intuitive Javascript APIs
+* Access raw or encoded audio byte array
+* Sampling data access (WIP)
+* HTTP Post or multipart upload
+
+##Security
+
+* No privacy leaking when swf is hosted on CDN, microphone permission will be prompted again when page domain name changed. (This prevent any 3rd party to reuse the hosted SWF and hence gaining the microphone access permission WITHOUT actual user approval.)
+
+##Other
+
+* SWF file can be hosted on CDN server to off load some traffic to main server.
+* Multiple recording instance
+
 
 ##Versions
 
@@ -64,6 +88,12 @@ To see logs from Playcorder, install MonsterDebugger <http://www.monsterdebugger
 
 
 ###Player
+
+####Config
+
+    {
+        type: 'auto', // player type, default to 'auto', can also be 'local', 'bytearray' or 'file'
+    }
 
 ####Methods
 
