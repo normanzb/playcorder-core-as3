@@ -38,8 +38,6 @@ package players
                 return;
             }
 
-            MonsterDebugger.trace(this, 'sample start writting...' );
-
             var count:int = 0;
             var sample:Number = 0;
 
@@ -51,8 +49,6 @@ package players
                 evt.data.writeFloat( sample );
                 count+=2;
             }
-
-            MonsterDebugger.trace(this, 'sample written' + count );
 
         }
 
