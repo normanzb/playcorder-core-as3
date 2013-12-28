@@ -1,6 +1,6 @@
 {
     "name": "Playcorder",
-    "version": "0.2.7",
+    "version": "0.2.8",
     "dependencies": {
         "grunt": "~0.4.1",
         "grunt-shell": "~0.2.0",
