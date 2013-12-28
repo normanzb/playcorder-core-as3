@@ -18,9 +18,13 @@ package players
         // http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/events/SampleDataEvent.html
         private const COUNT_SAMPLE_MIN:uint = 2048;
         private const COUNT_SAMPLE_MAX:uint = 8192;
+        private const DEFAULT_FREQ:int = 44;
+        private const DEFAULT_NUMBER_OF_CHANNELS:int = 2;
 
         private var _raw:ByteArray;
         private var _rate:int = 0;
+        private var _length:int = 0;
+        private var _numberOfChannels:int = 1;
         private var _output:Sound = new Sound();
         private var _dfdPlaying:Deferred;
 
@@ -44,11 +48,113 @@ package players
             while ( _raw.bytesAvailable && count < COUNT_SAMPLE_MAX )
             {
                 sample = _raw.readFloat();
-                // write sample twice because of 2 channels by default
                 evt.data.writeFloat( sample );
-                evt.data.writeFloat( sample );
-                count+=2;
+                count++;
             }
+
+        }
+
+        // TODO:
+        // http://en.wikipedia.org/wiki/Downmixing
+        private function downChannelMixing():void
+        {
+            throw new Error('Down mixing is not implemented yet, LocalPlayer currently support channels <= 2');
+        }
+
+        private function upChannelMixing():void
+        {
+            var data:ByteArray = new ByteArray();
+            var currentChannelIndex:int = 0;
+            var targetChannelIndex:int = 0;
+            var channels:Array;
+
+            _raw.position = 0;
+
+            while( _raw.bytesAvailable )
+            {
+                channels = [];
+
+                // read channel data
+                for
+                (
+                    currentChannelIndex = 0; 
+                    currentChannelIndex < _numberOfChannels && _raw.bytesAvailable > 0; 
+                    currentChannelIndex++
+                )
+                {
+                    channels.push(_raw.readFloat());
+                }
+
+                if ( channels.length != _numberOfChannels )
+                {
+                    // channel info not intact, don't play it
+                    break;
+                }
+
+                for
+                ( 
+                    targetChannelIndex = 0; 
+                    targetChannelIndex < DEFAULT_NUMBER_OF_CHANNELS; 
+                    targetChannelIndex++
+                )
+                {
+                    data.writeFloat( channels[targetChannelIndex % _numberOfChannels] );
+                }
+            }
+
+            _numberOfChannels = DEFAULT_NUMBER_OF_CHANNELS;
+            _raw = data;
+        }
+
+        private function upSampling():void
+        {
+            var data:ByteArray = new ByteArray();
+            var currentSampleIndex:int = 0;
+            var targetSampleIndex:int = 0;
+            var samples:Array;
+            var precisionRate:int = Constants.sampleRates[_rate];
+
+            _raw.position = 0;
+
+            while( _raw.bytesAvailable )
+            {
+                samples = [];
+
+                // read channel data
+                for
+                (
+                    currentSampleIndex = 0; 
+                    currentSampleIndex < precisionRate && _raw.bytesAvailable > 0; 
+                    currentSampleIndex++
+                )
+                {
+                    samples.push(_raw.readFloat());
+                }
+
+                if ( samples.length != precisionRate )
+                {
+                    // samples info not intact, don't play it
+                    break;
+                }
+
+                for
+                ( 
+                    targetSampleIndex = 0; 
+                    targetSampleIndex < Constants.sampleRates[DEFAULT_FREQ]; 
+                    targetSampleIndex++
+                )
+                {
+                    currentSampleIndex = ( precisionRate * targetSampleIndex / Constants.sampleRates[DEFAULT_FREQ] ) >>> 0 ;
+                    data.writeFloat( samples[ currentSampleIndex ] );
+                }
+            }
+
+            _rate = DEFAULT_FREQ;
+            _raw = data;
+        }
+
+        private function downSampling():void
+        {
 
         }
 
@@ -62,8 +168,35 @@ package players
             }
 
             _dfdPlaying = new Deferred();
+
+            if ( _numberOfChannels > DEFAULT_NUMBER_OF_CHANNELS )
+            {
+                MonsterDebugger.trace(this, 'down mixing...' );
+                downChannelMixing();
+                MonsterDebugger.trace(this, 'down mixing is done' );
+            }
+            else ( _numberOfChannels < DEFAULT_NUMBER_OF_CHANNELS )
+            {
+                MonsterDebugger.trace(this, 'up mixing...' );
+                upChannelMixing();
+                MonsterDebugger.trace(this, 'up mixing is done' );
+            }
+
+            if ( _rate * _numberOfChannels < DEFAULT_FREQ * DEFAULT_NUMBER_OF_CHANNELS )
+            {
+                MonsterDebugger.trace(this, 'up sampling...' );
+                upSampling();
+                MonsterDebugger.trace(this, 'up sampling is done' );
+            }
+            else if ( _rate * _numberOfChannels > DEFAULT_FREQ * DEFAULT_NUMBER_OF_CHANNELS )
+            {
+                MonsterDebugger.trace(this, 'down sampling...' );
+                downSampling();
+                MonsterDebugger.trace(this, 'down sampling is done' );
+            }
+
             _raw.position = 0;
-            
+
             _output.play();
 
             MonsterDebugger.trace(this, 'sound outputing started' );
@@ -120,6 +253,17 @@ package players
                 {
                     source['format'] = 'PCM-32BIT-Float';
                 }
+                else 
+                {
+                    if ( source['format'] != 'PCM-32BIT-Float')
+                    {
+                        // TODO: convert?
+                        dfdExtract.reject
+                        (
+                            'Currently only support 32bit float PCM, ' + source['format'] + ' is not supported'
+                        );
+                    }
+                }
 
                 dfdExtract.resolve( source );
             }
@@ -129,9 +273,20 @@ package players
                 .then(
                     function(obj:Object):void
                     {
+                        var channels:Array = (obj['channels'] as Array);
                         _raw = obj.data as ByteArray;
                         _rate = obj.rate as int;
-                        playSound();
+                        _length = obj.length as int;
+                        _numberOfChannels = channels ? channels.length : 1;
+
+                        try
+                        {
+                            playSound();
+                        }
+                        catch(ex:*)
+                        {
+                            dfd.reject(ex);
+                        }
 
                         dfd.resolve( null );
                     }, 
