@@ -2,6 +2,8 @@
 
 Audio Player and Recorder written in ActionScript3 with intuitive JavaScript interface.
 
+<http://normanzb.github.io/playcorder-core-as3/>
+
 #Features
 
 ##Recording
