@@ -157,8 +157,17 @@
         #playcorder
         {
             position: absolute;
-            top: 20px;
-            left: 20px;
+            top: 50%;
+            left: 50%;
+        }
+        #playcorder object
+        {
+            position: relative;
+            top: -70px;
+            left: -50%;
+
+            -webkit-box-shadow: 0 0 2300px 700px rgba(0,0,0,0.5);
+            box-shadow: 0 0 2300px 700px rgba(0,0,0,0.5);
         }
         #playcorder.ready
         {
@@ -243,7 +252,9 @@
             <div class="sub-title">Flash based recording component with intuitive Javascript APIs</div>
         </h1>
     </div>
-    <div id="playcorder-container"></div>
+    <div id="playcorder">
+        <div id="playcorder-placeholder"></div>
+    </div>
     <div class="separator horizontal"></div>
     <div id="panel" class="panel">
         <table>
@@ -389,7 +400,7 @@
 
             swfobject.embedSWF(
                 "./dist/Playcorder.swf", 
-                "playcorder-container", 
+                "playcorder-placeholder", 
                 "215", "140", 
                 "11.9.0", "playerProductInstall.swf", 
                 {}, params, {
