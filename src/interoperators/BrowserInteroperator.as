@@ -66,7 +66,7 @@ package interoperators
                             host['onisready'] = function() 
                             {
                                 // tell the user we are ready
-                                host.isReady = true;
+                                host.ready = true;
                             };
 
                             for( var name in MEMBER_NAME ) 

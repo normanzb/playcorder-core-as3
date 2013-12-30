@@ -83,7 +83,7 @@ To see logs from Playcorder, install MonsterDebugger <http://www.monsterdebugger
 ####Properties
 
 1. loaded - true to indicate the SWF is fully loaded.
-2. isReady - true to indicate the onReady event is fired and user accepted the microphone acesss.
+2. ready - true to indicate the onReady event is fired and user accepted the microphone acesss.
 
 ####Methods
 
