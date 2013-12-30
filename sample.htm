@@ -118,6 +118,46 @@
           animation-delay: -0.8s;
         }
 
+        .topbar
+        {
+            overflow: hidden;
+
+            margin: 20px 0;
+        }
+
+        .logo 
+        {
+            float: left;
+            padding: 10px;
+            background: #FFF;
+
+            width: 60px;
+            height: 60px;
+        }
+
+        .comp-name
+        {
+            position: relative;
+
+            float: left;
+
+            height: 80px;
+            margin: 0;
+            padding: 0 10px;
+            font-size: 40px;
+            line-height: 80px;
+        }
+
+        .sub-title
+        {
+            position: absolute;
+            left: 10px;
+            top: 10px;
+
+            font-size: 12px;
+            line-height: 12px;
+        }
+
         @-webkit-keyframes stretchdelay {
           0%, 40%, 100% { -webkit-transform: scaleY(0.4) }  
           20% { -webkit-transform: scaleY(1.0) }
@@ -141,6 +181,13 @@
         <div class="rect3"></div>
         <div class="rect4"></div>
         <div class="rect5"></div>
+    </div>
+    <div class='topbar'>
+        <div class="logo"><img src="./icon.png" /></div>
+        <h1 class="comp-name">
+            <span>Playcorder.Core.AS3</span>
+            <div class="sub-title">Flash based recording component with intuitive Javascript APIs</div>
+        </h1>
     </div>
     <div id="playcorder-container"></div>
     <div id="panel" class="panel">
