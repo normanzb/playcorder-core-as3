@@ -157,9 +157,12 @@
 
         .playcorder
         {
-            position: absolute;
+            position: fixed;
             top: 50%;
             left: 50%;
+
+            width: 215px;
+            height: 140px;
         }
 
         .playcorder object
@@ -585,8 +588,11 @@
 
                                 console.log('audio data length: ' + obj.length);
 
+                                hideSpinner();
+
                                 // try to convert it to arraybuffer
-                                if ( !ArrayBuffer ){
+                                if ( !window.ArrayBuffer ){
+                                    alert('Data is downloaded, However your browser does not support essential APIs for Javascript audio processing, try flash APIs!');
                                     return;
                                 }
 
@@ -602,10 +608,8 @@
                                 sharedDownloadObject = obj;
 
                                 btnEncodeWave.removeAttribute("disabled");
-                                btnShowHex.removeAttribute('disabled');
                                 btnDownloadAsFile.removeAttribute('disabled');
-
-                                hideSpinner();
+                                btnShowHex.removeAttribute('disabled');
                             };
 
                             pc.recorder.result.ondownloadfailed = function(obj)
@@ -672,11 +676,13 @@
                                 }
 
                                 console.log('mp3 length: ' + obj.length);
-
                                 console.log('done:' + new Date() * 1);
 
+                                hideSpinner();
+
                                 // try to convert it to arraybuffer
-                                if ( !ArrayBuffer ){
+                                if ( !window.ArrayBuffer ){
+                                    alert('Data is downloaded, However your browser does not support essential APIs for Javascript audio processing, try flash APIs!');
                                     return;
                                 }
 
@@ -692,10 +698,9 @@
                                 sharedDownloadObject = obj;
 
                                 btnPlayBuffer.removeAttribute('disabled');
-                                btnShowHex.removeAttribute('disabled');
                                 btnDownloadAsFile.removeAttribute('disabled');
+                                btnShowHex.removeAttribute('disabled');
 
-                                hideSpinner();
                             };
                             pc.recorder.result.ondownloadfailed = function(obj)
                             {
@@ -739,11 +744,13 @@
                                 }
 
                                 console.log('wave length: ' + obj.length);
-
                                 console.log('done:' + new Date() * 1);
 
+                                hideSpinner();
+
                                 // try to convert it to arraybuffer
-                                if ( !ArrayBuffer ){
+                                if ( !window.ArrayBuffer ){
+                                    alert('Data is downloaded, However your browser does not support essential APIs for Javascript audio processing, try flash APIs!');
                                     return;
                                 }
 
@@ -759,9 +766,9 @@
                                 sharedDownloadObject = obj;
 
                                 btnPlayBuffer.removeAttribute('disabled');
-                                btnShowHex.removeAttribute('disabled');
                                 btnDownloadAsFile.removeAttribute('disabled');
-                                hideSpinner();
+                                btnShowHex.removeAttribute('disabled');
+                                
                             };
                             pc.recorder.result.ondownloadfailed = function(obj)
                             {
@@ -787,6 +794,7 @@
 
                             if ( !AudioContext )
                             {
+                                alert('Your browser does not support essential APIs for Javascript audio processing, try flash APIs!');
                                 return;
                             }
 
