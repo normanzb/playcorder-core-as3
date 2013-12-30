@@ -175,8 +175,8 @@
         .playcorder:after
         {
             position: absolute;
-            top: -50%;
-            left: -50%;
+            top: -5px;
+            left: -30px;
 
             content: 'Loading...';
         }
@@ -429,7 +429,10 @@
                 function( result ){
                     window.pc = result.ref;
                     var elPlaycorder = document.getElementsByClassName('playcorder')[0];
-                    elPlaycorder.className += " loaded";
+                    pc.onloaded = function() {
+                        elPlaycorder.className += " loaded";
+                    };
+                    
                     pc.onready = function(){
                         var curGUID;
                         var elMuted = document.getElementById('mic-muted');
