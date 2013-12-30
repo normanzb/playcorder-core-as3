@@ -19,11 +19,25 @@
             color: #FFF;
             text-shadow: 1px 1px 0 rgba(0,0,0, .8);
         }
-        button,
-        input[type=button]
+        .separator
+        {
+            height:0;
+            width: 0;
+            overflow: hidden;
+        }
+        .separator.horizontal
+        {
+            width: 100%;
+
+            border-top: 1px dashed green;
+            border-bottom: 1px dashed transparent;
+        }
+        .panel button,
+        .panel input[type=button]
         {
             border-radius: 0;
             border: 0px solid #FFF;
+
             background-color: #FFF;
             -webkit-appearance: none;
             -moz-appearance: none;
@@ -31,10 +45,87 @@
             appearance: none;
         }
 
-        button[disabled],
-        input[type=button][disabled]
+        .panel button[disabled],
+        .panel input[type=button][disabled]
         {
             background-color: #DEDEDE;
+        }
+
+        .stretcher
+        {
+            box-sizing: border-box;
+            display: inline-block;
+        }
+
+        .stretcher.w100p
+        {
+            margin: 1% 2%;
+            width: 96%;
+        }
+
+        .stretcher.w50p
+        {
+            margin: 1% 2%;
+            width: 46%;
+        }
+
+        .stretcher.w33p
+        {
+            margin: 1% 2%;
+            width: 29%;
+        }
+
+        .topbar
+        {
+            overflow: hidden;
+
+            margin: 20px 0;
+        }
+
+        .topbar .logo 
+        {
+            float: left;
+            padding: 10px;
+            background: #FFF;
+
+            width: 60px;
+            height: 60px;
+        }
+
+        .topbar .comp-name
+        {
+            position: relative;
+
+            float: left;
+
+            height: 80px;
+            margin: 0;
+            padding: 0 10px;
+            font-size: 40px;
+            line-height: 80px;
+        }
+
+        .topbar .sub-title
+        {
+            position: absolute;
+            left: 10px;
+            top: 10px;
+
+            font-size: 12px;
+            line-height: 12px;
+        }
+
+        .panel
+        {
+            margin: 20px 0;
+        }
+
+        .panel table
+        {
+            width: 100%;
+            border-spacing: 0;
+            border-collapse: collapse;
+            text-align: center;
         }
 
         #view-hex
@@ -75,6 +166,7 @@
             left: -9999px;
         }
 
+        /* spinner */
         .spinner 
         {
             position: fixed;
@@ -120,46 +212,6 @@
           animation-delay: -0.8s;
         }
 
-        .topbar
-        {
-            overflow: hidden;
-
-            margin: 20px 0;
-        }
-
-        .logo 
-        {
-            float: left;
-            padding: 10px;
-            background: #FFF;
-
-            width: 60px;
-            height: 60px;
-        }
-
-        .comp-name
-        {
-            position: relative;
-
-            float: left;
-
-            height: 80px;
-            margin: 0;
-            padding: 0 10px;
-            font-size: 40px;
-            line-height: 80px;
-        }
-
-        .sub-title
-        {
-            position: absolute;
-            left: 10px;
-            top: 10px;
-
-            font-size: 12px;
-            line-height: 12px;
-        }
-
         @-webkit-keyframes stretchdelay {
           0%, 40%, 100% { -webkit-transform: scaleY(0.4) }  
           20% { -webkit-transform: scaleY(1.0) }
@@ -192,32 +244,36 @@
         </h1>
     </div>
     <div id="playcorder-container"></div>
+    <div class="separator horizontal"></div>
     <div id="panel" class="panel">
         <table>
             <tr>
-                <td rowspan="2"><button id="mic-start" disabled="disabled">start (downloading SWF... )</button></td>
-                <td rowspan="2">-&gt;</td>
-                <td rowspan="2"><button id="mic-stop" disabled="disabled">stopped</button></td>
-                <td rowspan="2">-&gt;</td>
-                <td><button id="mic-download-raw" disabled="disabled">download as raw data (js)</button></td>
-                <td>-&gt;</td>
-                <td><button id="mic-encode-wave" disabled="disabled">encode to wave (js)</button></td>
-                <td rowspan="2">-&gt;</td>
-                <td  rowspan="2">
-                    <button id="mic-buffer-play" disabled="disabled">play shared buffer (js)</button> <br />
-                    <button id="mic-buffer-play-as" disabled="disabled">play recorded audio (as)</button> <br />
-                    <button id="mic-buffer-extract" disabled="disabled">extract as file (js)</button> <br />
-                    <button id="mic-buffer-hexview" disabled="disabled">show in hex view (js)</button>
+                <td width="10%"><button id="mic-start" disabled="disabled">loading</button></td>
+                <td width="5%">-&gt;</td>
+                <td width="10%"><button id="mic-stop" disabled="disabled">stopped</button></td>
+                <td width="5%">-&gt;</td>
+                <td width="45%">
+                    <button 
+                        id="mic-download-raw" class="stretcher w33p" disabled="disabled">download as raw data (js)
+                    </button><span 
+                        class="stretcher w33p" style="text-align:center;">-&gt;
+                    </span><button 
+                        id="mic-encode-wave" class="stretcher w33p" disabled="disabled">encode to wave (js)</button> <br />
+
+                    <button id="mic-download-wave" class="stretcher w100p" disabled="disabled">download as wave (as)</button><br />
+                    <button id="mic-download-mp3" class="stretcher w100p" disabled="disabled">download as mp3  (as)</button><br />
+                    <button id="mic-upload-wave" class="stretcher w100p" disabled="disabled">upload to ./test as wave file using plain post (as)</button> <br />
+                    <button id="mic-upload-mp3" class="stretcher w50p" disabled="disabled">upload to ./test as mp3 file using multipart(as)
+                        </button><button
+                         id="mic-upload-mp3-confirm" class="stretcher w50p" disabled="disabled">click to confirm upload</button>
                 </td>
-            </tr>
-            <tr>
-                <td colspan="3">
-                    <button id="mic-download-wave" disabled="disabled" style="width: 100%">download as wave (as)</button><br />
-                    <button id="mic-download-mp3" disabled="disabled" style="width: 100%">download as mp3  (as)</button><br />
-                    <button id="mic-upload-wave" disabled="disabled">upload to ./test as wave file using plain post (as)</button> <br />
-                    <button id="mic-upload-mp3" disabled="disabled">upload to ./test as mp3 file using multipart(as)</button> <button id="mic-upload-mp3-confirm" disabled="disabled">click to confirm upload</button>
+                <td width="5%">-&gt;</td>
+                <td width="20%">
+                    <button id="mic-buffer-play" class="stretcher w50p" disabled="disabled">Play shared buffer (js)</button><br />
+                    <button id="mic-buffer-play-as" class="stretcher w50p" disabled="disabled">Play recorded audio (as)</button><br />
+                    <button id="mic-buffer-extract" class="stretcher w50p" disabled="disabled">Extract as file (js)</button><br />
+                    <button id="mic-buffer-hexview" class="stretcher w50p" disabled="disabled">Display Hex (js)</button>
                 </td>
-                <td></td>
             </tr>
         </table>
     </div>
@@ -380,7 +436,7 @@
                         hideSpinner();
 
                         btnStart.removeAttribute('disabled');
-                        btnStart.innerText = 'start';
+                        btnStart.innerHTML = 'start';
                         document.getElementById('playcorder').className += " ready";
                         
                         // init rtmp recorder
@@ -514,6 +570,7 @@
                                 btnShowHex.removeAttribute('disabled');
                                 btnDownloadAsFile.removeAttribute('disabled');
 
+                                hideSpinner();
                             };
 
                             pc.recorder.result.ondownloadfailed = function(obj)
@@ -523,10 +580,14 @@
                                 }
 
                                 console.log('downloading failed: ' + obj.message);
+
+                                hideSpinner();
                             };
 
                             // try to download data
                             downloadGuid = pc.recorder.result.download( );
+
+                            showSpinner();
                         };
 
                         btnEncodeWave.onclick = function(){
@@ -665,6 +726,7 @@
                                 btnPlayBuffer.removeAttribute('disabled');
                                 btnShowHex.removeAttribute('disabled');
                                 btnDownloadAsFile.removeAttribute('disabled');
+                                hideSpinner();
                             };
                             pc.recorder.result.ondownloadfailed = function(obj)
                             {
@@ -673,12 +735,15 @@
                                 }
 
                                 console.log('downloading failed: ' + obj.message);
+                                hideSpinner();
                             };
 
 
                             // try to download data
                             console.log('start:' + new Date() * 1);
                             downloadGuid = pc.recorder.result.download( 'wave' );
+
+                            showSpinner();
                         };
 
                         btnPlayBuffer.onclick = function(){
@@ -740,6 +805,7 @@
                                     return;
                                 }
                                 alert('uploaded');
+                                hideSpinner();
                             };
                             pc.recorder.result.onuploadfailed = function(obj)
                             {
@@ -747,8 +813,10 @@
                                     return;
                                 }
                                 alert(obj.message);
+                                hideSpinner();
                             };
                             console.log('upload guid:', uploadGuid);
+                            showSpinner();
                         };
 
                         btnUploadMP3.onclick = function(){
@@ -766,6 +834,7 @@
                                     return;
                                 }
                                 alert('uploaded');
+                                hideSpinner();
                             };
                             pc.recorder.result.onuploadfailed = function(obj)
                             {
@@ -773,8 +842,10 @@
                                     return;
                                 }
                                 alert(obj.message);
+                                hideSpinner();
                             };
                             console.log('upload guid:', uploadGuid);
+                            showSpinner();
                         };
 
                         btnDownloadAsFile.onclick = function() {
