@@ -60,6 +60,15 @@ package interoperators
                     var strEnd:String = (<![CDATA[
                             )();
 
+                            // mark as loaded
+                            host['loaded'] = true;
+                            // this method will be called after onready
+                            host['onisready'] = function() 
+                            {
+                                // tell the user we are ready
+                                host.isReady = true;
+                            };
+
                             for( var name in MEMBER_NAME ) 
                             (function(name)
                             {

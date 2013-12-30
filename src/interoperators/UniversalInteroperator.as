@@ -52,6 +52,8 @@ package interoperators
             PLAYER_STOP                             : 'player_stop',
             PLAYER_INITIALIZE                       : 'player_initialize',
             ONREADY                                 : 'onready',
+            ONISREADY                               : 'onisready',
+            ONLOADED                                : 'onloaded',
             GETID                                   : 'getID',
             PREPARE                                 : 'prepare'
         };
@@ -524,6 +526,9 @@ package interoperators
                 return _count;
             });
 
+            // fire loaded first, this call must be after the definition of GETID, otherwise findSelf will not work
+            callSelf( MEMBER_NAME.ONLOADED );
+
             _inited = true;
 
             // resolve when the super class is inited.
@@ -536,6 +541,8 @@ package interoperators
         {
             // fire ready event when it is ready
             callSelf( MEMBER_NAME.ONREADY );
+            // fire internal used ready event
+            callSelf( MEMBER_NAME.ONISREADY );
         }
 
         protected function getFuncToInvokeExternalHostMethod(id:Number):String
@@ -550,6 +557,7 @@ package interoperators
 
             super(playcorder);
 
+            // data must be set after super(), otherwise it will be null
             data['id'] = _count;
         }
     }

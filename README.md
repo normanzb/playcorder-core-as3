@@ -80,13 +80,19 @@ To see logs from Playcorder, install MonsterDebugger <http://www.monsterdebugger
 
 ###Playcorder
 
+####Properties
+
+1. loaded - true to indicate the SWF is fully loaded.
+2. isReady - true to indicate the onReady event is fired and user accepted the microphone acesss.
+
 ####Methods
 
-1. getID - get the instance ID of current playcorder
+1. getID - get the instance ID of current playcorder.
 
 ####Events
 
-1. onready - fire when playcorder is ready
+1. onloaded - fire when playcorder is downloaded.
+2. onready - fire when playcorder is ready for use (user accepted microphone access).
 
 
 ###Player
