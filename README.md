@@ -6,8 +6,8 @@ Audio Player and Recorder written in ActionScript3 with intuitive JavaScript int
 
 ##Recording
 
-* Recording audio without server support
-* RTMP recording if server available.
+* Client-side audio recording without server support
+* RTMP recording if supported as well.
 
 ##Playing
 
@@ -20,7 +20,7 @@ Audio Player and Recorder written in ActionScript3 with intuitive JavaScript int
 * MP3
 * Speex (WIP)
 * Flac (WIP)
-* Non-blocking faster encoding
+* Non-blocking fast encoding
 * Plugin system (WIP)
 
 ##Javascript APIs
