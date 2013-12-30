@@ -131,7 +131,7 @@ package interoperators
                     ]]>).toString();
 
                     ExternalInterface.call(
-                        (strStart + _funcToGetExternalHost + strEnd).replace(/\<ID\>/g, _count), UniversalInteroperator.MEMBER_NAME
+                        (strStart + _funcToGetExternalHost + strEnd).replace(/\<ID\>/g, _guid), UniversalInteroperator.MEMBER_NAME
                     );
                 })
                 .then(function():Promise
@@ -159,7 +159,7 @@ package interoperators
                 });
         }
 
-        protected override function getFuncToInvokeExternalHostMethod(id:Number):String
+        protected override function getFuncToInvokeExternalHostMethod(id:String):String
         {
             var start:String = (<![CDATA[
                 function playcorderBuiltinInvokeHostMethod(methodName, arg1, arg2)
@@ -185,7 +185,7 @@ package interoperators
                 {
                     var STR_BUILTIIN_OBJ = '__playcorderBuiltinObject';
                     var global = window;
-                    var id = <ID>;
+                    var id = '<ID>';
                     var objs = document.getElementsByTagName('object');
                     var args = Array.prototype.slice.call(arguments, 1);
                     var cache;

@@ -13,6 +13,7 @@ package interoperators
     import tickets.Ticket;
     import tickets.GUIDTicket;
     import data.containers.RAWAudioContainer;
+    import guids.GUID;
 
     import com.demonsters.debugger.MonsterDebugger;
     import com.codecatalyst.promise.Deferred;
@@ -21,7 +22,6 @@ package interoperators
 
     public class UniversalInteroperator extends Interoperator
     {
-        private static var instanceCount:Number = 0;
         public static const MEMBER_NAME:Object = {
             RECORDER_ONCONNECTED                    : 'recorder_onconnected',
             RECORDER_ONDISCONNECTED                 : 'recorder_ondisconnected',
@@ -60,7 +60,7 @@ package interoperators
 
         private var _inited:Boolean = false;
         private var _findSelf:String;
-        protected var _count:Number = 0;
+        protected var _guid:GUID;
         private var _dfdInteraction:Object = null;
 
         private function secure(func:Function):Function
@@ -521,9 +521,9 @@ package interoperators
                 return playcorder.prepare();
             });
 
-            ExternalInterface.addCallback(MEMBER_NAME.GETID, function():Number
+            ExternalInterface.addCallback(MEMBER_NAME.GETID, function():String
             {
-                return _count;
+                return _guid.toString();
             });
 
             // fire loaded first, this call must be after the definition of GETID, otherwise findSelf will not work
@@ -545,20 +545,20 @@ package interoperators
             callSelf( MEMBER_NAME.ONISREADY );
         }
 
-        protected function getFuncToInvokeExternalHostMethod(id:Number):String
+        protected function getFuncToInvokeExternalHostMethod(id:String):String
         {
             return "";
         }
 
         public function UniversalInteroperator(playcorder:Playcorder)
         {
-            _count = instanceCount++;
-            _findSelf = getFuncToInvokeExternalHostMethod( _count );
+            _guid = GUID.create();
+            _findSelf = getFuncToInvokeExternalHostMethod( _guid.toString() );
 
             super(playcorder);
 
             // data must be set after super(), otherwise it will be null
-            data['id'] = _count;
+            data['id'] = _guid;
         }
     }
 }
