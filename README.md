@@ -6,12 +6,12 @@ Audio Player and Recorder written in ActionScript3 with intuitive JavaScript int
 
 ##Recording
 
-* Client-side audio recording without server support
-* RTMP recording if supported as well.
+* Client-side audio recording without server support.
+* RTMP server-side recording.
 
 ##Playing
 
-* Playback remote audio file
+* Playback remote audio file.
 * Local playback, both recorded or bytearray audio.
 
 ##Audio Encoding
@@ -25,10 +25,10 @@ Audio Player and Recorder written in ActionScript3 with intuitive JavaScript int
 
 ##Javascript APIs
 
-* Intuitive Javascript APIs
-* Access raw or encoded audio byte array
-* Sampling data access (WIP)
-* HTTP Post or multipart upload
+* Intuitive Javascript APIs.
+* Access raw or encoded audio byte array.
+* Sampling data access (WIP).
+* HTTP Post or multipart upload.
 
 ##Security
 
