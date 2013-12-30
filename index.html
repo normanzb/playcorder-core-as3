@@ -154,13 +154,15 @@
             padding: 0 10px;
             display: inline-block;
         }
-        #playcorder
+
+        .playcorder
         {
             position: absolute;
             top: 50%;
             left: 50%;
         }
-        #playcorder object
+
+        .playcorder object
         {
             position: relative;
             top: -70px;
@@ -169,7 +171,22 @@
             -webkit-box-shadow: 0 0 2300px 700px rgba(0,0,0,0.5);
             box-shadow: 0 0 2300px 700px rgba(0,0,0,0.5);
         }
-        #playcorder.ready
+
+        .playcorder:after
+        {
+            position: absolute;
+            top: -50%;
+            left: -50%;
+
+            content: 'Loading...';
+        }
+
+        .playcorder.loaded:after
+        {
+            display: none;
+        }
+
+        .playcorder.ready
         {
             top: -9999px;
             left: -9999px;
@@ -252,7 +269,7 @@
             <div class="sub-title">Flash based recording component with intuitive Javascript APIs</div>
         </h1>
     </div>
-    <div id="playcorder">
+    <div class="playcorder">
         <div id="playcorder-placeholder"></div>
     </div>
     <div class="separator horizontal"></div>
@@ -409,6 +426,8 @@
                 }, 
                 function( result ){
                     window.pc = result.ref;
+                    var elPlaycorder = document.getElementsByClassName('playcorder')[0];
+                    elPlaycorder.className += " loaded";
                     pc.onready = function(){
                         var curGUID;
                         var elMuted = document.getElementById('mic-muted');
@@ -448,7 +467,7 @@
 
                         btnStart.removeAttribute('disabled');
                         btnStart.innerHTML = 'start';
-                        document.getElementById('playcorder').className += " ready";
+                        elPlaycorder.className += " ready";
                         
                         // init rtmp recorder
                         // pc.recorder.initialize({
