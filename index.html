@@ -431,9 +431,23 @@
                 }, 
                 function( result ){
                     window.pc = result.ref;
+
+                    var elSpinner = document.getElementById('spinner');
                     var elPlaycorder = document.getElementsByClassName('playcorder')[0];
+
+                    function showSpinner()
+                    {
+                        elSpinner.style.display = 'block';
+                    }
+
+                    function hideSpinner()
+                    {
+                        elSpinner.style.display = 'none';
+                    }
+
                     pc.onloaded = function() {
                         elPlaycorder.className += " loaded";
+                        hideSpinner();
                     };
                     
                     pc.onready = function(){
@@ -455,24 +469,11 @@
                         var btnUploadMP3Confirm = document.getElementById('mic-upload-mp3-confirm');
                         var btnDownloadAsFile = document.getElementById('mic-buffer-extract');
                         var elViewHex = document.getElementById('view-hex');
-                        var elSpinner = document.getElementById('spinner');
 
                         var sharedArrayBuffer;
                         var sharedDownloadObject;
                         var sharedAudioContext;
-
-                        function showSpinner()
-                        {
-                            elSpinner.style.display = 'block';
-                        }
-
-                        function hideSpinner()
-                        {
-                            elSpinner.style.display = 'none';
-                        }
                         
-                        hideSpinner();
-
                         btnStart.removeAttribute('disabled');
                         btnStart.innerHTML = 'start';
                         elPlaycorder.className += " ready";
