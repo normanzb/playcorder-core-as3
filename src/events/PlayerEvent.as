@@ -7,7 +7,8 @@ package events
     public class PlayerEvent extends Event
     {
         public static const STARTED:String = 'started';
-        public static const STOPPED:String = 'stoppped';
+        public static const STOPPED:String = 'stopped';
+        public var guid:GUID;
 
         /**
          * 
@@ -15,9 +16,11 @@ package events
          * @param time
          * 
          */
-        function PlayerEvent(type:String)
+        function PlayerEvent(type:String, guid:GUID)
         {
             super(type, false, false);
+
+            this.guid = guid;
         }
     
     }

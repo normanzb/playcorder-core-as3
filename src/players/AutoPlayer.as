@@ -5,6 +5,7 @@ package players
     import players.LocalPlayer;
 
     import tickets.Ticket;
+    import events.PlayerEvent;
 
     import com.codecatalyst.promise.Deferred;
     import com.codecatalyst.promise.Promise;
@@ -20,6 +21,13 @@ package players
             super(cfg);
 
             _config = cfg;
+        }
+
+        private function handleEventRedirect(evt:PlayerEvent):void
+        {
+            MonsterDebugger.trace(evt, 'sub player event redirect: ' + evt.type );
+
+            dispatchEvent( new PlayerEvent(evt.type, evt.guid) );
         }
 
         private function initSubPlayer(source:*):void
@@ -43,6 +51,9 @@ package players
                     _player = new LocalPlayer( _config );
                     break;
             }
+
+            _player.addEventListener( PlayerEvent.STARTED, handleEventRedirect );
+            _player.addEventListener( PlayerEvent.STOPPED, handleEventRedirect );
         }
 
         private function tryCall( method:String, ...args ):Ticket

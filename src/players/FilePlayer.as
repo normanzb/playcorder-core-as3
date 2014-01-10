@@ -1,11 +1,13 @@
 package players
 {
     import tickets.Ticket;
+    import tickets.GUIDTicket;
     import events.PlayerEvent;
     import players.Player;
     import com.codecatalyst.promise.Deferred;
     import com.codecatalyst.promise.Promise;
     import com.demonsters.debugger.MonsterDebugger;
+    import guids.GUID;
 
     import flash.net.NetConnection;
     import flash.net.NetStream;
@@ -19,6 +21,7 @@ package players
         private var _dfdPlay:Deferred;
         private var _dfdConnReady:Deferred = new Deferred();
         private var _streamClient:Object = {};
+        private var _guidPlaying:GUID;
 
         public var readyState:Number = 1;
         public var duration:Number;
@@ -61,7 +64,9 @@ package players
         {
             _stream.close();
 
-            dispatchEvent( new PlayerEvent( PlayerEvent.STOPPED ) );
+            dispatchEvent( new PlayerEvent( PlayerEvent.STOPPED, _guidPlaying ) );
+
+            _guidPlaying = null;
         }
 
         private function onMetaData( data:Object ):void
@@ -91,7 +96,17 @@ package players
         public override function start( path:* ):Ticket
         {
             var dfd:Deferred = new Deferred();
-            var ret:Ticket = new Ticket(dfd.promise);
+            var ret:GUIDTicket = new GUIDTicket(dfd.promise);
+
+            if ( _guidPlaying != null )
+            {
+                ret.guid = _guidPlaying;
+            }
+            else
+            {
+                _guidPlaying = ret.guid;
+            }
+
 
             _dfdPlay = new Deferred();
             readyState = 0;
@@ -104,7 +119,7 @@ package players
                     _stream.play( String( path ) );
                     _stream.seek( 0 );
 
-                    dispatchEvent( new PlayerEvent( PlayerEvent.STARTED ) );
+                    dispatchEvent( new PlayerEvent( PlayerEvent.STARTED, _guidPlaying ) );
                 })
             );
 
@@ -113,7 +128,8 @@ package players
 
         public override function play( path:* ):Ticket
         {
-            var ret:Ticket = new Ticket( _dfdPlay.promise );
+            var ret:GUIDTicket = new GUIDTicket( _dfdPlay.promise );
+            _guidPlaying = ret.guid;
 
             start( path );
 

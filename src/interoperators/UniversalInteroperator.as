@@ -152,6 +152,7 @@ package interoperators
         {
             callSelf(MEMBER_NAME.PLAYER_ONSTARTED, 
             {
+                'guid': event.guid ? event.guid.toString():''
             })
         }
 
@@ -159,6 +160,7 @@ package interoperators
         {
             callSelf(MEMBER_NAME.PLAYER_ONSTOPPED, 
             {
+                'guid': event.guid ? event.guid.toString():''
             })
         }
 
@@ -191,18 +193,22 @@ package interoperators
                 return dfd.promise;
             }
 
-            ExternalInterface.addCallback(MEMBER_NAME.PLAYER_START, function(source:* = null):void
+            ExternalInterface.addCallback(MEMBER_NAME.PLAYER_START, function(source:* = null):String
             {
                 MonsterDebugger.trace(this, 'external calls to player.start()');
 
-                playcorder.player.start( source );
+                var ticket:GUIDTicket = playcorder.player.start( source ) as GUIDTicket;
+
+                return ticket != null ? ticket.guid.toString() : '';
             });
 
-            ExternalInterface.addCallback(MEMBER_NAME.PLAYER_STOP, function():void
+            ExternalInterface.addCallback(MEMBER_NAME.PLAYER_STOP, function():String
             {
                 MonsterDebugger.trace(this, 'external calls to player.stop()');
 
-                playcorder.player.stop();
+                var ticket:GUIDTicket = playcorder.player.stop() as GUIDTicket;
+
+                return ticket != null ? ticket.guid.toString() : '';
             });
 
             ExternalInterface.addCallback(MEMBER_NAME.RECORDER_START, function():String
@@ -508,10 +514,14 @@ package interoperators
 
             ExternalInterface.addCallback(MEMBER_NAME.PLAYER_INITIALIZE, function(config:Object):Boolean
             {
+                MonsterDebugger.trace(this, 'external calls to player_initialize()');
+
                 var ret:Boolean = playcorder.init_player(config);
 
                 playcorder.player.addEventListener(PlayerEvent.STARTED, onPlayerStarted);
                 playcorder.player.addEventListener(PlayerEvent.STOPPED, onPlayerStopped);
+
+                MonsterDebugger.trace(playcorder.player, 'Player events are attached.');
 
                 return ret;
             });

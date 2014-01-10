@@ -829,15 +829,16 @@
                         btnPlayBufferAs.onclick = function() {
                             pc.player.initialize({});
 
-                            pc.player.onstarted = function(){
-                                console.log('play started');
+                            pc.player.onstarted = function(evt){
+                                console.log('play started ' + evt.guid);
                             };
 
-                            pc.player.onstopped = function(){
-                                console.log('play stopped');
+                            pc.player.onstopped = function(evt){
+                                console.log('play stopped ' + evt.guid);
                             };
 
-                            pc.player.start();
+                            var guid = pc.player.start();
+                            console.log('play guid: ' + guid);
                         };
 
                         btnUploadWave.onclick = function(){

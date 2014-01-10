@@ -6,10 +6,14 @@ package players
 
     import Playcorder;
     import tickets.Ticket;
+    import tickets.GUIDTicket;
     import helpers.Constants;
+    import guids.GUID;
+    import events.PlayerEvent;
 
     import com.codecatalyst.promise.Deferred;
     import com.codecatalyst.promise.Promise;
+    import com.codecatalyst.util.nextTick;
     import com.demonsters.debugger.MonsterDebugger;
 
     public class LocalPlayer extends Player
@@ -27,6 +31,7 @@ package players
         private var _numberOfChannels:int = 1;
         private var _output:Sound = new Sound();
         private var _dfdPlaying:Deferred;
+        private var _guidPlaying:GUID;
 
         function LocalPlayer(cfg:Object)
         {
@@ -50,6 +55,14 @@ package players
                 sample = _raw.readFloat();
                 evt.data.writeFloat( sample );
                 count++;
+            }
+
+            if ( !_raw.bytesAvailable )
+            {
+                nextTick(function():void
+                {
+                    stopSound();
+                });
             }
 
         }
@@ -197,6 +210,8 @@ package players
 
             _raw.position = 0;
 
+            dispatchEvent( new PlayerEvent( PlayerEvent.STARTED, _guidPlaying ) );
+
             _output.play();
 
             MonsterDebugger.trace(this, 'sound outputing started' );
@@ -204,15 +219,25 @@ package players
 
         private function stopSound():void
         {
+            if ( _dfdPlaying == null )
+            {
+                return;
+            }
+
             _dfdPlaying.resolve( null );
 
             _dfdPlaying = null;
+
+            dispatchEvent( new PlayerEvent( PlayerEvent.STOPPED,  _guidPlaying ) );
+
+            _guidPlaying = null;
         }
 
         public override function play(source:*):Ticket
         {
             var dfd:Deferred = new Deferred();
-            var ret:Ticket = new Ticket(dfd.promise);
+            var ret:GUIDTicket = new GUIDTicket(dfd.promise);
+            _guidPlaying = ret.guid;
 
             start( source );
 
@@ -228,7 +253,16 @@ package players
         public override function start(source:*):Ticket
         {
             var dfd:Deferred = new Deferred();
-            var ret:Ticket = new Ticket(dfd.promise);
+            var ret:GUIDTicket = new GUIDTicket(dfd.promise);
+
+            if ( _guidPlaying != null )
+            {
+                ret.guid = _guidPlaying;
+            }
+            else
+            {
+                _guidPlaying = ret.guid;
+            }
 
             var dfdExtract:Deferred = new Deferred();
 
