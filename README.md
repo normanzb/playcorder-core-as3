@@ -6,9 +6,9 @@ Audio Player and Recorder written in ActionScript3 with intuitive JavaScript int
 
 #The JavaSciript Wrapper
 
-While providing intuitive and pollution free interfaces which bridging calls to flash, this project is meant to be simplified as the core part of recording/playing component.
+While providing intuitive and pollution free interfaces, this project is meant to be lightweight and simplistic. It does only the core functionalities and try to does it better. 
 
-For who would like to have a better Javascript interface, please checkout the Javascript wrapper project by Garry.Yao at <https://github.com/garryyao/playcorder>.
+So for who looking for better, convenient, semantically beautiful Javascript interfaces, please checkout the Javascript wrapper project by Garry.Yao at <https://github.com/garryyao/playcorder>.
 
 The wrapper is Promise based and handling SWF file loading automatically, it also planned to support web audio api core with automatically context switching in the future.
 
