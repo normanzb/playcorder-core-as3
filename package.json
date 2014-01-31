@@ -1,6 +1,6 @@
 {
     "name": "playcorder-core-as3",
-    "version": "0.2.11",
+    "version": "0.3.0",
     "description": "Flash based audio recorder and player with intuitive JavaScript API, allow raw data access.",
     "keywords": "audio recorder player javascript api",
     "dependencies": {
