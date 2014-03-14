@@ -165,7 +165,7 @@
             height: 140px;
         }
 
-        .playcorder object
+        .playcorder > .inner 
         {
             position: relative;
             top: -70px;
@@ -275,7 +275,9 @@
         </h1>
     </div>
     <div class="playcorder">
-        <div id="playcorder-placeholder"></div>
+        <div class="inner">
+            <div id="playcorder-placeholder"></div>
+        </div>
     </div>
     <div class="separator horizontal"></div>
     <div id="panel" class="panel">
@@ -313,7 +315,7 @@
     <span class="caption">Info:</span>
     <div id="view-info">
         <span class="label">muted:</span><span id="mic-muted" class="status muted"></span>
-        <span class="label">volumn:</span><span id="mic-volumn" class="status volumn"></span>
+        <span class="label">volume:</span><span id="mic-volume" class="status volume"></span>
         <span class="label">recorded duration:</span><span id="mic-duration" class="status duration"></span>
     </div>
     <span class="caption">Shared Buffer Hex View:</span>
@@ -453,7 +455,7 @@
                     pc.onready = function(){
                         var curGUID;
                         var elMuted = document.getElementById('mic-muted');
-                        var elVolumn = document.getElementById('mic-volumn');
+                        var elVolume = document.getElementById('mic-volume');
                         var elDuration = document.getElementById('mic-duration');
                         var btnStart = document.getElementById('mic-start');
                         var btnStop = document.getElementById('mic-stop');
@@ -515,10 +517,10 @@
                         // detect recorder changes
                         pc.recorder.onchange = function(){
                             if ( pc.recorder_muted() ) {
-                                elMuted.innerText = 'yes';
+                                elMuted.innerHTML = 'yes';
                             }
                             else {
-                                elMuted.innerText = 'no';
+                                elMuted.innerHTML = 'no';
                             }
                         };
 
@@ -533,10 +535,10 @@
                                 return;
                             }
 
-                            btnStart.innerText = 'started'
+                            btnStart.innerHTML = 'started'
                             btnStart.setAttribute('disabled', 'disabled');
 
-                            btnStop.innerText = 'stop';
+                            btnStop.innerHTML = 'stop';
                             btnStop.removeAttribute('disabled', 'disabled');
 
                             window.startTime = new Date() * 1;
@@ -553,10 +555,10 @@
                                 return;
                             }
 
-                            btnStart.innerText = 'start'
+                            btnStart.innerHTML = 'start'
                             btnStart.removeAttribute('disabled');
 
-                            btnStop.innerText = 'stopped';
+                            btnStop.innerHTML = 'stopped';
                             btnStop.setAttribute('disabled', 'disabled');
 
                             btnDownloadRaw.removeAttribute('disabled');
@@ -566,7 +568,7 @@
                             btnUploadMP3.removeAttribute('disabled');
                             btnPlayBufferAs.removeAttribute('disabled');
 
-                            elDuration.innerText = pc.recorder.result.duration();
+                            elDuration.innerHTML = pc.recorder.result.duration();
                             hideSpinner();
                         };
 
@@ -728,7 +730,7 @@
                                 arr.push(ui8a[i]);
                             }
 
-                            elViewHex.innerText = arr.map(function(el){
+                            elViewHex.innerHTML = arr.map(function(el){
                                 var ret = el.toString(16);
                                 if (ret.length == 1) {
                                     ret = "0"+ret;
@@ -906,9 +908,9 @@
                             forceDownload( new Blob([ dv ], { type: type} ), filename );
                         };
                         
-                        // update the recorder volumn
+                        // update the recorder volume
                         ;(function looper(){
-                            elVolumn.innerText = pc.recorder.activity();
+                            elVolume.innerHTML = pc.recorder.activity();
                             setTimeout( looper, 30 );
                         })();
 
