@@ -48,6 +48,9 @@ package recorders
         private function onStateStart(event:StatusEvent):void
         {
             var me:LocalRecorder = this;
+            var dfdFirstSample:Deferred = new Deferred();
+
+            event.promise = dfdFirstSample.promise;
 
             MonsterDebugger.trace(me, 'status changed to start');
 
@@ -55,14 +58,19 @@ package recorders
             _buffer = new ByteArray();
             _currentGUID = _queueGUID.shift();
 
-            _mic.addEventListener( SampleDataEvent.SAMPLE_DATA, onSampleData );
-
-            nextTick(function():void
+            _mic.addEventListener( SampleDataEvent.SAMPLE_DATA, function onFirstSample():void
             {
+                _mic.removeEventListener( SampleDataEvent.SAMPLE_DATA, onFirstSample );
+
+                dfdFirstSample.resolve( null );
+
                 MonsterDebugger.trace(me, 'dispatch started');
                 var evt:RecorderEvent = new RecorderEvent(RecorderEvent.STARTED, _currentGUID);
                 dispatchEvent( evt );
-            });
+            } );
+
+            _mic.addEventListener( SampleDataEvent.SAMPLE_DATA, onSampleData );
+
         }
 
         private function onStateRecord(event:StatusEvent):void
