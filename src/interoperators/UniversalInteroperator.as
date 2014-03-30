@@ -435,7 +435,7 @@ package interoperators
                         .then(function(obj:Object):*
                         {
                             // a uesr interaction is required
-                            if ( obj['deferred'] != null )
+                            if ( obj != null && obj['deferred'] != null )
                             {
                                 _dfdInteraction = obj['deferred'];
 
@@ -449,6 +449,7 @@ package interoperators
 
                                 return obj['promise'];
                             }
+                            
                             return obj;
                         })
                         .then(

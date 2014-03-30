@@ -265,7 +265,7 @@ package data.containers
                         loader.addEventListener(IOErrorEvent.IO_ERROR, 
                             function(evt:IOErrorEvent):void
                             {
-                                dfd.reject('fail to upload, ex: ' + evt.toString())
+                                dfd.reject('fail to upload, ex: ' + evt.toString());
                             });
 
                         MonsterDebugger.trace( me, 'loading... ' );
